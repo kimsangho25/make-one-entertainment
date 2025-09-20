@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Contact } from "@/api/entities";
+//import { Contact } from "@/api/entities";
 import { CheckCircle, Phone, Mail, Instagram, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,15 +39,33 @@ export default function ContactSection() {
     setIsSubmitting(true);
     
     try {
-      await Contact.create({
-        name: formData.contactName,
-        company: formData.company,
-        phone: formData.phone,
-        event_type: "기타행사",
-        participants: parseInt(formData.expectedParticipants) || 0,
-        budget: formData.budgetRange,
-        message: `행사명: ${formData.eventName}\n날짜: ${formData.eventDate}\n예상 인원: ${formData.expectedParticipants}\n예산 범위: ${formData.budgetRange}\n요청사항: ${formData.requirements}`
+      // await Contact.create({
+      //   name: formData.contactName,
+      //   company: formData.company,
+      //   phone: formData.phone,
+      //   event_type: "기타행사",
+      //   participants: parseInt(formData.expectedParticipants) || 0,
+      //   budget: formData.budgetRange,
+      //   message: `행사명: ${formData.eventName}\n날짜: ${formData.eventDate}\n예상 인원: ${formData.expectedParticipants}\n예산 범위: ${formData.budgetRange}\n요청사항: ${formData.requirements}`
+      // });
+      const res = await fetch("/api/contact", {
+        method: 'POST',
+        headers: { 'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+          company: formData.company,
+          contactName: formData.contactName,
+          eventName: formData.eventName,
+          phone: formData.phone,
+          eventDate: formData.eventDate,
+          expectedParticipants: formData.expectedParticipants,
+          budgetRange: formData.budgetRange,
+          requirements: formData.requirements
+        })
       });
+      if(!res.ok){
+        const txt = await res.text().catch(()=> '');
+        throw new Error(`contact api failed: ${res.status} ${txt}`);
+      }
       setIsSubmitted(true);
     } catch (error) {
       console.error("Failed to submit contact form:", error);

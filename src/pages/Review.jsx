@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Review } from '@/api/entities';
-import { ReviewLike } from '@/api/entities';
-import { ReviewReport } from '@/api/entities';
-import { User } from '@/api/entities';
-import { UploadFile } from '@/api/integrations';
+// import { Review } from '@/api/entities';
+// import { ReviewLike } from '@/api/entities';
+// import { ReviewReport } from '@/api/entities';
+// import { User } from '@/api/entities';
+// import { UploadFile } from '@/api/integrations';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Star, MessageSquare, Plus, Filter, Calendar, Edit2, Trash2, X, Heart, Flag, Camera, Upload, Loader2 } from 'lucide-react';
@@ -12,6 +12,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+import { getClientId } from '@/lib/clientId';
+
+//로컬에서 운영으로 변경할 때 환경변수 만들어서 채우기
+const API = import.meta.env.VITE_BACKEND_BASE || "http://localhost:8765";
+
+const baseHeaders = () => ({
+  'Content-Type': 'application/json',
+  'X-Client-Id': getClientId(),
+});
+
+// UI
 const StarRating = ({ rating, setRating, readOnly = false }) => (
   <div className="flex gap-1">
     {[1, 2, 3, 4, 5].map((star) => (
@@ -27,6 +38,7 @@ const StarRating = ({ rating, setRating, readOnly = false }) => (
   </div>
 );
 
+
 const ImageUpload = ({ images, setImages, uploading, setUploading }) => {
   // 이미지 배열 타입 안전성 확보 및 null 값 필터링
   const safeImages = Array.isArray(images)
@@ -34,44 +46,52 @@ const ImageUpload = ({ images, setImages, uploading, setUploading }) => {
     : (images && typeof images === 'string' ? [images] : []);
 
   const handleFileSelect = async (e) => {
-    console.log('파일 선택됨:', e.target.files); // 디버그 로그
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
     setUploading(true);
     try {
-      console.log('업로드 시작, 파일 수:', files.length); // 디버그 로그
-      
-      const uploadPromises = files.map(async (file) => {
-        console.log('업로드 중인 파일:', file.name, file.size); // 디버그 로그
-        const { file_url } = await UploadFile({ file });
-        console.log('업로드 완료된 URL:', file_url); // 디버그 로그
-        return file_url;
-      });
+      // 최대 5장 제한
+      const remain = Math.max(0, 5 - safeImages.length);
+      const toUpload = files.slice(0, remain);
 
-      const uploadedUrls = await Promise.all(uploadPromises);
-      console.log('모든 업로드 완료:', uploadedUrls); // 디버그 로그
+      const uploadedUrls = await Promise.all(
+        toUpload.map(async (file) => {
+          const form = new FormData();
+          form.append('file', file);
+
+          const res = await fetch(`${API}/api/uploads`, {
+            method: 'POST',
+            headers: {
+              'X-Client-Id': getClientId(),
+            },
+            body: form,
+          });
+          if (!res.ok) {
+            const text = await res.text().catch(() => '');
+            throw new Error(`upload_failed: ${res.status} ${text}`);
+          }
+          const data = await res.json();
+          if (!data?.file_url) throw new Error('no_file_url_in_response');
+          return data.file_url;
+        })
+      );
       
-      setImages(prev => {
-        const safePrev = Array.isArray(prev)
-          ? prev.filter(img => img && typeof img === 'string')
-          : (prev && typeof prev === 'string' ? [prev] : []);
-        return [...safePrev, ...uploadedUrls.filter(url => url && typeof url === 'string')];
-      });
+      const next = [...safeImages, ...uploadedUrls].slice(0, 5);
+      setImages(next);
     } catch (error) {
       console.error('이미지 업로드 실패:', error);
       alert('이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
+    } finally {
+      setUploading(false);
+      // 같은 파일 다시 선택할 수 있게 input 값 초기화
+      if (e?.target) e.target.value = '';
     }
-    setUploading(false);
   };
 
   const removeImage = (index) => {
-    setImages(prev => {
-      const safePrev = Array.isArray(prev)
-        ? prev.filter(img => img && typeof img === 'string')
-        : (prev && typeof prev === 'string' ? [prev] : []);
-      return safePrev.filter((_, i) => i !== index);
-    });
+    const next = safeImages.filter((_, i) => i !== index);
+    setImages(next);
   };
 
   return (
@@ -87,7 +107,7 @@ const ImageUpload = ({ images, setImages, uploading, setUploading }) => {
             accept="image/*"
             onChange={handleFileSelect}
             className="hidden"
-            disabled={uploading}
+            disabled={uploading || safeImages.length >= 5}
           />
         </label>
 
@@ -122,7 +142,7 @@ const ImageUpload = ({ images, setImages, uploading, setUploading }) => {
       )}
 
       <p className="text-xs text-gray-500">
-        최대 5장까지 업로드 가능합니다. (JPG, PNG, GIF)
+        최대 5장까지 업로드 가능합니다. (JPG, PNG, GIF) - 현재 {safeImages.length}/5
       </p>
     </div>
   );
@@ -187,6 +207,8 @@ const ReportModal = ({ isOpen, onClose, onSubmit }) => {
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
 
+  if (!isOpen) return null;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!reason) return;
@@ -196,7 +218,7 @@ const ReportModal = ({ isOpen, onClose, onSubmit }) => {
     onClose();
   };
 
-  if (!isOpen) return null;
+  
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -249,9 +271,7 @@ const ReportModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-const ReviewCard = ({ review, currentUser, onEdit, onDelete, userLikes, onLike, onReport }) => {
-  const isOwner = currentUser && currentUser.email === review.created_by;
-  const hasLiked = userLikes.includes(review.id);
+const ReviewCard = ({ review, isOwner, hasLiked, onEdit, onDelete, onLike, onReport }) => {
 
   const handleDelete = () => {
     if (window.confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
@@ -265,13 +285,13 @@ const ReviewCard = ({ review, currentUser, onEdit, onDelete, userLikes, onLike, 
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-            {review.author.charAt(0)}
+            {(review.author || 'U').charAt(0)}
           </div>
           <div>
             <h3 className="font-bold text-gray-900">{review.author}</h3>
             <p className="text-sm text-gray-500 flex items-center gap-1">
               <Calendar className="w-3 h-3" />
-              {new Date(review.created_date).toLocaleDateString('ko-KR', {
+              {new Date(review.created_at).toLocaleDateString('ko-KR', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
@@ -327,13 +347,9 @@ const ReviewCard = ({ review, currentUser, onEdit, onDelete, userLikes, onLike, 
       <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-4">
         <button
           onClick={() => onLike(review.id)}
-          disabled={!currentUser}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-            hasLiked
-              ? 'bg-red-50 text-red-600 hover:bg-red-100'
-              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-          } ${!currentUser ? 'opacity-50 cursor-not-allowed' : ''}`}
-          title={!currentUser ? '로그인 후 이용 가능합니다' : ''}
+            hasLiked ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+          }`} 
         >
           <Heart className={`w-4 h-4 ${hasLiked ? 'fill-current' : ''}`} />
           <span className="text-sm font-medium">
@@ -343,9 +359,9 @@ const ReviewCard = ({ review, currentUser, onEdit, onDelete, userLikes, onLike, 
 
         <button
           onClick={() => onReport(review.id)}
-          disabled={!currentUser || isOwner}
+          disabled={isOwner}
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          title={!currentUser ? '로그인 후 이용 가능합니다' : isOwner ? '본인 리뷰는 신고할 수 없습니다' : ''}
+          title={isOwner ? '본인 리뷰는 신고할 수 없습니다' : ''}
         >
           <Flag className="w-4 h-4" />
           <span className="text-sm">신고</span>
@@ -364,6 +380,7 @@ export default function ReviewPage() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportingReviewId, setReportingReviewId] = useState(null);
   const [uploading, setUploading] = useState(false);
+
   const [newReview, setNewReview] = useState({
     rating: 5,
     content: '',
@@ -371,127 +388,76 @@ export default function ReviewPage() {
     author: '',
     image_urls: []
   });
-  const [currentUser, setCurrentUser] = useState(null);
+
+  const OWNED_KEY = 'my_owned_review_ids';
+  const [ownedIds, setOwnedIds] = useState(() => {
+    try {
+      const raw = localStorage.getItem(OWNED_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const saveOwned = (ids) => {
+    setOwnedIds(ids);
+    try { localStorage.setItem(OWNED_KEY, JSON.stringify(ids)); } catch {}
+  };
 
   useEffect(() => {
-    fetchReviews();
-    User.me().then(user => {
-      setCurrentUser(user);
-      setNewReview(prev => ({ ...prev, author: user.full_name || '' }));
-      fetchUserLikes(user.email);
-    }).catch(() => {
-      setCurrentUser(null);
-      setNewReview(prev => ({ ...prev, author: '' }));
+    load().catch((e) => {
+      console.error(e);
+      alert('리뷰 로드 실패');
     });
   }, []);
 
-  const fetchReviews = async () => {
-    const fetchedReviews = await Review.list('-created_date');
-    setReviews(fetchedReviews);
-  };
+  async function load() {
+    const [listRes, likeRes] = await Promise.all([
+      fetch(`${API}/api/reviews?sort=-created_at&page=1&limit=20`),
+      fetch(`${API}/api/reviews/likes/me`, { headers: baseHeaders()}),
+    ]);
+    if (!listRes.ok) throw new Error("list_failed");
+    if (!likeRes.ok) throw new Error("like_failed");
+    const list = await listRes.json();
+    const liked = await likeRes.json();
+    setReviews(Array.isArray(list.items) ? list.items : []);
+    setUserLikes(Array.isArray(liked) ? liked : []);
+  }
 
-  const fetchUserLikes = async (userEmail) => {
-    if (!userEmail) return;
-    try {
-      const likes = await ReviewLike.filter({ user_email: userEmail });
-      setUserLikes(likes.map(like => like.review_id));
-    } catch (error) {
-      console.error('좋아요 데이터 로드 실패:', error);
-    }
-  };
 
   const handleLike = async (reviewId) => {
-    if (!currentUser) {
-      alert('로그인 후 이용 가능합니다.');
+    const already = userLikes.includes(reviewId);
+    const res = await fetch(`${API}/api/reviews/${reviewId}/likes`, {
+      method: already ? 'DELETE' : 'POST',
+      headers: baseHeaders(),
+    });
+    if (!res.ok) {
+      alert('좋아요 처리 실패');
       return;
     }
-
-    try {
-      const hasLiked = userLikes.includes(reviewId);
-
-      if (hasLiked) {
-        // 좋아요 취소
-        const existingLike = await ReviewLike.filter({
-          review_id: reviewId,
-          user_email: currentUser.email
-        });
-
-        if (existingLike.length > 0) {
-          await ReviewLike.delete(existingLike[0].id);
-
-          setReviews(prevReviews => prevReviews.map(r =>
-            r.id === reviewId ? { ...r, likes_count: Math.max(0, (r.likes_count || 0) - 1) } : r
-          ));
-          setUserLikes(prev => prev.filter(id => id !== reviewId));
-        }
-      } else {
-        // 좋아요 추가
-        await ReviewLike.create({
-          review_id: reviewId,
-          user_email: currentUser.email
-        });
-
-        setReviews(prevReviews => prevReviews.map(r =>
-          r.id === reviewId ? { ...r, likes_count: (r.likes_count || 0) + 1 } : r
-        ));
-        setUserLikes(prev => [...prev, reviewId]);
-      }
-
-      fetchReviews();
-    } catch (error) {
-      console.error('좋아요 처리 실패:', error);
-      alert('좋아요 처리에 실패했습니다. 다시 시도해 주세요.');
-    }
+    await load();
   };
 
   const handleReport = (reviewId) => {
-    if (!currentUser) {
-      alert('로그인 후 이용 가능합니다.');
-      return;
-    }
-    const reviewToReport = reviews.find(r => r.id === reviewId);
-    if (reviewToReport && currentUser.email === reviewToReport.created_by) {
-      alert('본인 리뷰는 신고할 수 없습니다.');
-      return;
-    }
     setReportingReviewId(reviewId);
     setShowReportModal(true);
   };
 
-  const handleSubmitReport = async (reportData) => {
-    if (!currentUser || !reportingReviewId) return;
-
-    try {
-      const existingReport = await ReviewReport.filter({
-        review_id: reportingReviewId,
-        reporter_email: currentUser.email
-      });
-
-      if (existingReport.length > 0) {
-        alert('이미 신고한 리뷰입니다.');
-        return;
-      }
-
-      await ReviewReport.create({
-        review_id: reportingReviewId,
-        reporter_email: currentUser.email,
-        reason: reportData.reason,
-        details: reportData.details
-      });
-
-      setReviews(prevReviews => prevReviews.map(r =>
-        r.id === reportingReviewId ? { ...r, reports_count: (r.reports_count || 0) + 1 } : r
-      ));
-
-      alert('신고가 접수되었습니다. 검토 후 적절한 조치를 취하겠습니다.');
-      fetchReviews();
-    } catch (error) {
-      console.error('신고 처리 실패:', error);
-      alert('신고 처리에 실패했습니다. 다시 시도해 주세요.');
-    } finally {
-      setShowReportModal(false);
-      setReportingReviewId(null);
+  const handleSubmitReport = async ({reason, details}) => {
+    if (!reportingReviewId) return;
+    const res = await fetch(`${API}/api/reviews/${reportingReviewId}/reports`, {
+      method: 'POST',
+      headers: baseHeaders(),
+      body: JSON.stringify({ reason, details }),
+    });
+    if (!res.ok) {
+      alert('리뷰 신고 실패');
+      return;
     }
+    alert('신고가 접수되었습니다.');
+    setShowReportModal(false);
+    setReportingReviewId(null);
+    await load();
   };
 
   const handleSubmit = async (e) => {
@@ -504,33 +470,56 @@ export default function ReviewPage() {
         ? newReview.image_urls.filter(url => url && typeof url === 'string')
         : [];
 
+      console.log('submit payload', {
+        ...newReview,
+        images_urls: newReview.image_urls,
+      });
       if (editingReview) {
-        // 수정 모드
-        await Review.update(editingReview.id, {
-          author: newReview.author,
-          rating: newReview.rating,
-          content: newReview.content,
-          eventType: newReview.eventType,
-          image_urls: safeImageUrls
+        // 리뷰 수정
+        const res = await fetch(`${API}/api/reviews/${editingReview.id}`, {
+          method: 'PUT',
+          headers: baseHeaders(),
+          body: JSON.stringify({
+            author: newReview.author,
+            rating: newReview.rating,
+            content: newReview.content,
+            eventType: newReview.eventType,
+            eventDate: new Date().toISOString().slice(0,10),
+            image_urls: safeImageUrls,
+          }),
         });
+        if (!res.ok) {
+          alert("리뷰 수정 실패");
+          return;
+        }
       } else {
-        // 새 리뷰 생성
-        await Review.create({
-          author: newReview.author,
-          rating: newReview.rating,
-          content: newReview.content,
-          eventType: newReview.eventType,
-          eventDate: new Date().toISOString().split('T')[0],
-          likes_count: 0,
-          reports_count: 0,
-          image_urls: safeImageUrls
+        const res = await fetch(`${API}/api/reviews`, {
+          method: 'POST',
+          headers: baseHeaders(),
+          body: JSON.stringify({
+            author: newReview.author,
+            rating: newReview.rating,
+            content: newReview.content,
+            eventType: newReview.eventType,
+            eventDate: new Date().toISOString().slice(0,10),
+            image_urls: safeImageUrls,
+          }),
         });
+        if (!res.ok) {
+          alert("리뷰 저장 실패");
+          return;
+        }
+        const data = await res.json(); // {ok: true, id}
+        if (data?.id) {
+          const next = Array.from(new Set([...(ownedIds || []), data.id]));
+          saveOwned(next);
+        }
       }
 
       setShowForm(false);
       setEditingReview(null);
-      setNewReview({ rating: 5, content: '', eventType: '', author: currentUser?.full_name || '', image_urls: [] });
-      fetchReviews();
+      setNewReview({ rating: 5, content: '', eventType: '', author: '', image_urls: [] });
+      await load();
     } catch (error) {
       console.error('리뷰 저장 실패:', error);
       alert('리뷰 저장에 실패했습니다. 다시 시도해 주세요.');
@@ -538,6 +527,10 @@ export default function ReviewPage() {
   };
 
   const handleEdit = (review) => {
+    if (!ownedIds.includes(review.id)) {
+      alert('본인이 작성한 리뷰만 수정할 수 있습니다.');
+      return;
+    }
     setEditingReview(review);
     // 이미지 배열 안전성 확보 및 null 값 필터링
     const safeImageUrls = Array.isArray(review.image_urls)
@@ -555,39 +548,57 @@ export default function ReviewPage() {
   };
 
   const handleDelete = async (reviewId) => {
+    if (!ownedIds.includes(reviewId)) {
+      alert('본인이 작성한 리뷰만 삭제할 수 있습니다.');
+      return;
+    }
+    if (!window.confirm('정말로 이 리뷰를 삭제하시겠습니까?')) return;
     try {
-      // 관련된 좋아요와 신고도 삭제
-      const likes = await ReviewLike.filter({ review_id: reviewId });
-      const reports = await ReviewReport.filter({ review_id: reviewId });
-
-      for (const like of likes) {
-        await ReviewLike.delete(like.id);
+      const res = await fetch(`${API}/api/reviews/${reviewId}`, {
+        method: 'DELETE',
+        headers: baseHeaders(),
+      });
+      if (!res.ok) {
+        alert('리뷰 삭제 실패');
+        return;
       }
-
-      for (const report of reports) {
-        await ReviewReport.delete(report.id);
-      }
-
-      await Review.delete(reviewId);
-      fetchReviews();
-      if (currentUser) {
-        fetchUserLikes(currentUser.email);
-      }
-    } catch (error) {
-      console.error('리뷰 삭제 실패:', error);
-      alert('리뷰 삭제에 실패했습니다. 다시 시도해 주세요.');
+      const next = (ownedIds || []).filter(id => id !== reviewId);
+      saveOwned(next); // ✅ 내 소유 목록 갱신
+      await load();
+    } catch (e) {
+      console.error('리뷰 삭제 실패:', e);
+      alert('리뷰 삭제에 실패했습니다.');
     }
   };
 
   const handleCancel = () => {
     setShowForm(false);
     setEditingReview(null);
-    setNewReview({ rating: 5, content: '', eventType: '', author: currentUser?.full_name || '', image_urls: [] });
+    setNewReview({ rating: 5, content: '', eventType: '', author:'', image_urls: [] });
+  };
+
+  // ReviewPage 컴포넌트 안에 추가
+  const resetNewReview = () => {
+    setNewReview({ rating: 5, content: '', eventType: '', author: '', image_urls: [] });
+  };
+
+  const handleTopButtonClick = () => {
+    if (showForm) {
+      // 폼 열려있으면 닫기(수정/작성 상관없이 취소)
+      setShowForm(false);
+      setEditingReview(null);   // 수정 상태 해제
+      resetNewReview();
+    } else {
+      // 폼 닫혀있으면 "새 리뷰 작성" 열기
+      setEditingReview(null);   // 항상 작성 모드로
+      resetNewReview();
+      setShowForm(true);
+    }
   };
 
   const sortedReviews = [...reviews].sort((a, b) => {
     if (sortBy === 'latest') {
-      return new Date(b.created_date) - new Date(a.created_date);
+      return new Date(b.created_at) - new Date(a.created_at);
     } else if (sortBy === 'rating') {
       return b.rating - a.rating;
     } else if (sortBy === 'likes') {
@@ -645,11 +656,11 @@ export default function ReviewPage() {
 
             {/* 리뷰 작성 버튼 */}
             <Button
-              onClick={() => setShowForm(!showForm)}
+              onClick={handleTopButtonClick}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
             >
               {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-              {editingReview ? '수정 취소' : showForm ? '작성 취소' : '리뷰 작성하기'}
+              {showForm ? (editingReview ? '수정 취소' : '작성 취소') : '리뷰 작성하기'}
             </Button>
           </div>
 
@@ -727,7 +738,7 @@ export default function ReviewPage() {
                       const safeImages = Array.isArray(images)
                         ? images.filter(url => url && typeof url === 'string')
                         : [];
-                      setNewReview({...newReview, image_urls: safeImages});
+                      setNewReview((prev) => ({...prev, image_urls: safeImages}));
                     }}
                     uploading={uploading}
                     setUploading={setUploading}
@@ -769,8 +780,8 @@ export default function ReviewPage() {
                 <ReviewCard
                   key={review.id}
                   review={review}
-                  currentUser={currentUser}
-                  userLikes={userLikes}
+                  isOwner={ownedIds.includes(review.id)}
+                  hasLiked={userLikes.includes(review.id)}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   onLike={handleLike}

@@ -1,333 +1,362 @@
-import React, { useState } from 'react';
-import { Media } from '@/api/entities';
-import { UploadFile } from '@/api/integrations';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Image as ImageIcon, Video, Check, X, Loader2, Play, Pause } from 'lucide-react';
+import { Upload, Image as ImageIcon, Video, Check, Trash2, Pencil, Plus, Tag, Calendar, X, Loader2, Play, Pause, Link as LinkIcon } from 'lucide-react';
+import { getClientId } from '@/lib/clientId';
+
+// 로컬/운영 전환은 VITE_BACKEND_BASE 로
+const API = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:8765';
+
+const baseHeaders = () => ({
+  'Content-Type': 'application/json',
+  'X-Client-Id': getClientId(),
+});
+
+const CATEGORIES = ['기업행사', '연예인행사', '팀빌딩', '체육대회', '축제', '공식행사', '영어행사'];
+// 간단 스피너 (Loader2 이슈 대체)
+const Spinner = () => (
+  <svg viewBox="0 0 24 24" className="w-4 h-4 animate-spin">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" opacity="0.25" />
+    <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="3" fill="none" />
+  </svg>
+);
+
+// YYYY-MM-DD
+const fmtDate = (v) => {
+  if (!v) return '';
+  try {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+    return new Date(v).toISOString().slice(0, 10);
+  } catch {
+    return String(v).split('T')[0] || '';
+  }
+};
 
 export default function AdminPage() {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [fileType, setFileType] = useState('');
-  const [category, setCategory] = useState('');
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // form
+  const [editing, setEditing] = useState(null); // row or null
   const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('');
   const [eventDate, setEventDate] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [mediaType, setMediaType] = useState('image'); // image | video
+  const [description, setDescription] = useState('');
+  const [displayOrder, setDisplayOrder] = useState(0);
 
-  const categories = ['운동회', '레크레이션', '축제', '기타행사'];
+  // 이미지형
+  const [imageUrls, setImageUrls] = useState([]); // string[]
+  const [imgUploading, setImgUploading] = useState(false);
 
-  const getFileType = (file) => {
-    const imageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-    const videoTypes = ['video/mp4', 'video/mov', 'video/webm', 'video/avi', 'video/quicktime'];
-    
-    if (imageTypes.includes(file.type)) {
-      return 'image';
-    } else if (videoTypes.includes(file.type)) {
-      return 'video';
-    }
-    return null;
-  };
+  // 영상형
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [videoFile, setVideoFile] = useState(null);
+  const [videoUploading, setVideoUploading] = useState(false);
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const detectedFileType = getFileType(file);
-      
-      if (!detectedFileType) {
-        alert('지원하지 않는 파일 형식입니다. 이미지(JPG, PNG, GIF) 또는 영상(MP4, MOV, WEBM) 파일을 선택해주세요.');
-        return;
-      }
+  const isEdit = Boolean(editing);
 
-      setSelectedFile(file);
-      setFileType(detectedFileType);
-      
-      // 미리보기 URL 생성
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      
-      // 기본 제목 설정
-      if (!title) {
-        setTitle(file.name.split('.')[0]);
-      }
-    }
-  };
-
-  const handleVideoToggle = () => {
-    const video = document.getElementById('preview-video');
-    if (video) {
-      if (isVideoPlaying) {
-        video.pause();
-        setIsVideoPlaying(false);
-      } else {
-        video.play();
-        setIsVideoPlaying(true);
-      }
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!selectedFile || !category || !title) {
-      alert('모든 필드를 입력해주세요.');
-      return;
-    }
-
-    setIsUploading(true);
-
-    try {
-      // 파일 업로드
-      const { file_url } = await UploadFile({ file: selectedFile });
-      
-      // Media 엔티티에 저장
-      const mediaData = {
-        title: title,
-        fileUrl: file_url,
-        fileType: fileType,
-        mimeType: selectedFile.type,
-        category: category,
-        eventDate: eventDate || new Date().toISOString().split('T')[0],
-        fileSize: selectedFile.size
-      };
-
-      // 영상의 경우 duration 추가 (실제로는 파일 메타데이터에서 가져와야 하지만 여기서는 간단히 처리)
-      if (fileType === 'video') {
-        mediaData.duration = 0; // 추후 영상 길이 측정 로직 추가 가능
-      }
-
-      await Media.create(mediaData);
-
-      setIsCompleted(true);
-      
-      // 3초 후 폼 리셋
-      setTimeout(() => {
-        resetForm();
-      }, 3000);
-
-    } catch (error) {
-      console.error('업로드 실패:', error);
-      alert('업로드에 실패했습니다. 다시 시도해주세요.');
-    }
-
-    setIsUploading(false);
-  };
+  async function load() {
+    setLoading(true);
+    const qs = new URLSearchParams({ sort: 'display_order,-event_date,-created_at', limit: '100' });
+    const res = await fetch(`${API}/api/media?${qs.toString()}`, { headers: baseHeaders() });
+    const data = await res.json();
+    const items = Array.isArray(data.items) ? data.items : [];
+    setList(items);
+    setLoading(false);
+  }
+  useEffect(() => { load(); }, []);
 
   const resetForm = () => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setSelectedFile(null);
-    setPreviewUrl(null);
-    setFileType('');
-    setCategory('');
+    setEditing(null);
     setTitle('');
+    setCategory('');
     setEventDate('');
-    setIsCompleted(false);
-    setIsVideoPlaying(false);
-    
-    // 파일 입력 필드 리셋
-    const fileInput = document.getElementById('file-input');
-    if (fileInput) {
-      fileInput.value = '';
+    setMediaType('image');
+    setDescription('');
+    setDisplayOrder(0);
+    setImageUrls([]);
+    setYoutubeUrl('');
+    setVideoFile(null);
+  };
+
+  const startEdit = (row) => {
+    setEditing(row);
+    setTitle(row.title || '');
+    setCategory(row.category || '');
+    // 날짜는 YYYY-MM-DD로
+    const rawDate = row.eventDate ?? row.event_date ?? '';
+    const fmtDate = (v) => (/^\d{4}-\d{2}-\d{2}$/.test(v) ? v : (v ? new Date(v).toISOString().slice(0, 10) : ''));
+    setEventDate(fmtDate(rawDate));
+
+    const mt = row.mediaType || row.media_type || 'image';
+    setMediaType(mt);
+    setDescription(row.description || '');
+    setDisplayOrder(row.displayOrder || row.display_order || 0);
+
+    // ✅ image_urls / imageUrls 모두 대응
+    const imgs = row.image_urls ?? row.imageUrls ?? [];
+    setImageUrls(Array.isArray(imgs) ? imgs.filter(Boolean) : []);
+
+    // ✅ media_url / mediaUrl 모두 대응
+    setYoutubeUrl(mt === 'video' ? ((row.mediaUrl ?? row.media_url) || '') : '');
+    setVideoFile(null);
+  };
+
+  const remove = async (id) => {
+    if (!confirm('삭제하시겠습니까?')) return;
+    const res = await fetch(`${API}/api/media/${id}`, { method: 'DELETE', headers: baseHeaders() });
+    if (!res.ok) { alert('삭제 실패'); return; }
+    await load();
+    if (editing?.id === id) resetForm();
+  };
+
+  // 이미지 다중 업로드
+  const onPickImages = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setImgUploading(true);
+    try {
+      const uploaded = [];
+      for (const f of files) {
+        const form = new FormData();
+        form.append('file', f);
+        const r = await fetch(`${API}/api/uploads`, {
+          method: 'POST',
+          headers: { 'X-Client-Id': getClientId() },
+          body: form,
+        });
+        if (!r.ok) throw new Error('upload_failed');
+        const { file_url } = await r.json();
+        if (file_url) uploaded.push(file_url);
+      }
+      setImageUrls((prev) => [...prev, ...uploaded].slice(0, 10));
+    } catch (e) {
+      console.error(e);
+      alert('이미지 업로드 실패');
+    } finally {
+      setImgUploading(false);
+      e.target.value = '';
     }
   };
 
-  const cancelUpload = () => {
+  // 영상 파일 업로드(선택)
+  const onPickVideo = async (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setVideoUploading(true);
+    try {
+      const form = new FormData();
+      form.append('file', f);
+      const r = await fetch(`${API}/api/uploads`, {
+        method: 'POST',
+        headers: { 'X-Client-Id': getClientId() },
+        body: form,
+      });
+      if (!r.ok) throw new Error('upload_failed');
+      const { file_url } = await r.json();
+      setVideoFile({ name: f.name, url: file_url, size: f.size, type: f.type });
+    } catch (e) {
+      console.error(e);
+      alert('영상 업로드 실패');
+    } finally {
+      setVideoUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  // 저장
+  const submit = async () => {
+    if (!title || !category || !mediaType) { alert('필수값 누락'); return; }
+
+    const payload = {
+      title,
+      category,
+      eventDate: eventDate || null,
+      description: description || null,
+      mediaType,
+      displayOrder: Number(displayOrder) || 0,
+      ...(mediaType === 'image'
+        ? { image_urls: imageUrls } // 서버는 image_urls 기대
+        : { mediaUrl: (youtubeUrl?.trim() || videoFile?.url || '') }
+      ),
+    };
+
+    if (mediaType === 'image' && (!imageUrls || imageUrls.length === 0)) {
+      alert('이미지를 최소 1장 업로드하세요'); return;
+    }
+    if (mediaType === 'video' && !payload.mediaUrl) {
+      alert('유튜브 URL 또는 영상 파일을 업로드하세요'); return;
+    }
+
+    const url = isEdit ? `${API}/api/media/${editing.id}` : `${API}/api/media`;
+    const method = isEdit ? 'PUT' : 'POST';
+
+    const res = await fetch(url, { method, headers: baseHeaders(), body: JSON.stringify(payload) });
+    if (!res.ok) { alert('저장 실패'); return; }
+    await load();
     resetForm();
   };
 
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+  const filtered = useMemo(() => list, [list]);
 
   return (
     <>
       <Header />
       <main className="pt-20 bg-gray-50 min-h-screen">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">미디어 관리자</h1>
-            <p className="text-lg text-gray-600">이미지와 영상을 업로드하고 포트폴리오에 추가하세요</p>
-          </div>
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <h1 className="text-3xl font-bold mb-8">미디어 관리자</h1>
 
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            {isCompleted ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Check className="w-8 h-8 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">업로드 완료!</h2>
-                <p className="text-gray-600 mb-6">
-                  {fileType === 'image' ? '이미지' : '영상'}가 성공적으로 포트폴리오에 추가되었습니다.
-                </p>
-                <Button onClick={resetForm} className="bg-blue-600 hover:bg-blue-700">
-                  새 파일 업로드
-                </Button>
-              </div>
+          {/* 목록 */}
+          <div className="bg-white rounded-2xl shadow p-6 mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">목록</h2>
+              <Button onClick={resetForm} variant="outline">
+                <Plus className="w-4 h-4 mr-1" />새로 만들기
+              </Button>
+            </div>
+
+            {loading ? (
+              <div className="text-gray-500 py-10">로딩 중...</div>
             ) : (
-              <div className="space-y-8">
-                {/* 카테고리 선택 */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">카테고리 선택</label>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="카테고리를 선택하세요" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat} value={cat}>
-                          {cat}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* 제목 입력 */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    {fileType === 'video' ? '영상' : '미디어'} 제목
-                  </label>
-                  <Input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="제목을 입력하세요"
-                    className="w-full"
-                  />
-                </div>
-
-                {/* 행사 날짜 */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">행사 날짜</label>
-                  <Input
-                    type="date"
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* 파일 업로드 */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">파일 선택</label>
-                  <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="w-10 h-10 mb-3 text-gray-400" />
-                        <p className="mb-2 text-sm text-gray-500">
-                          <span className="font-semibold">클릭하여 파일 업로드</span> 또는 드래그 앤 드롭
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          이미지: JPG, PNG, GIF | 영상: MP4, MOV, WEBM (최대 100MB)
-                        </p>
-                      </div>
-                      <input
-                        id="file-input"
-                        type="file"
-                        accept="image/*,video/*"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                {/* 미리보기 영역 */}
-                {previewUrl && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                      미리보기 {fileType === 'video' && '(클릭해서 재생/정지)'}
-                    </label>
-                    <div className="relative bg-gray-100 rounded-lg p-4">
-                      {fileType === 'image' ? (
-                        <img
-                          src={previewUrl}
-                          alt="미리보기"
-                          className="max-w-full max-h-96 mx-auto rounded-lg shadow-md object-contain"
-                        />
-                      ) : (
-                        <div className="relative max-w-full max-h-96 mx-auto">
-                          <video
-                            id="preview-video"
-                            src={previewUrl}
-                            className="max-w-full max-h-96 mx-auto rounded-lg shadow-md object-contain"
-                            controls={false}
-                            onEnded={() => setIsVideoPlaying(false)}
-                          />
-                          <button
-                            onClick={handleVideoToggle}
-                            className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/40 transition-colors rounded-lg"
-                          >
-                            <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors">
-                              {isVideoPlaying ? (
-                                <Pause className="w-6 h-6 text-gray-800" />
-                              ) : (
-                                <Play className="w-6 h-6 text-gray-800 ml-1" />
-                              )}
-                            </div>
-                          </button>
-                        </div>
-                      )}
-                      
-                      <button
-                        onClick={cancelUpload}
-                        className="absolute top-6 right-6 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                    
-                    {selectedFile && (
-                      <div className="mt-2 text-sm text-gray-500 space-y-1">
-                        <p>파일명: {selectedFile.name}</p>
-                        <p>크기: {formatFileSize(selectedFile.size)}</p>
-                        <p>유형: {fileType === 'image' ? '이미지' : '영상'} ({selectedFile.type})</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* 업로드 버튼 */}
-                <div className="flex gap-4 pt-6">
-                  <Button
-                    onClick={cancelUpload}
-                    variant="outline"
-                    className="flex-1"
-                    disabled={!selectedFile || isUploading}
-                  >
-                    취소
-                  </Button>
-                  <Button
-                    onClick={handleUpload}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
-                    disabled={!selectedFile || !category || !title || isUploading}
-                  >
-                    {isUploading ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        업로드 중...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        {fileType === 'video' ? (
-                          <Video className="w-4 h-4" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filtered.map((m) => {
+                  const imgs = Array.isArray(m.image_urls) ? m.image_urls : (Array.isArray(m.imageUrls) ? m.imageUrls : []);
+                  const thumb = (imgs[0]) || m.thumbnailUrl || '';
+                  return (
+                    <div key={m.id} className="border rounded-xl overflow-hidden bg-white">
+                      <div className="relative aspect-video bg-gray-100">
+                        {thumb ? (
+                          <img src={thumb} className="w-full h-full object-cover" alt="" />
                         ) : (
-                          <ImageIcon className="w-4 h-4" />
+                          <div className="w-full h-full grid place-items-center text-gray-400">
+                            {(m.media_type === 'video' || m.mediaType === 'video') ? <Video className="w-10 h-10" /> : <ImageIcon className="w-10 h-10" />}
+                          </div>
                         )}
-                        최종 업로드
                       </div>
-                    )}
-                  </Button>
-                </div>
+                      <div className="p-4">
+                        <div className="font-semibold line-clamp-1">{m.title}</div>
+                        <div className="text-sm text-gray-500 flex gap-4 mt-1">
+                          <span className="flex items-center gap-1"><Tag size={14} />{m.category}</span>
+                          {m.event_date || m.eventDate ? (
+                            <span className="flex items-center gap-1"><Calendar size={14} />{fmtDate(m.eventDate || m.event_date)}</span>
+                          ) : null}
+                        </div>
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" onClick={() => startEdit(m)}>
+                            <Pencil className="w-4 h-4 mr-1" />수정
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => remove(m.id)}>
+                            <Trash2 className="w-4 h-4 mr-1" />삭제
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
+          </div>
+
+          {/* 폼 */}
+          <div className="bg-white rounded-2xl shadow p-6">
+            <h2 className="text-xl font-semibold mb-4">{isEdit ? '수정' : '신규 등록'}</h2>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">카테고리</label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger><SelectValue placeholder="선택하세요" /></SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">제목</label>
+                <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="제목" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">행사 날짜</label>
+                <Input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">정렬 우선순위(높을수록 앞)</label>
+                <Input type="number" value={displayOrder} onChange={(e) => setDisplayOrder(e.target.value)} />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium mb-2">설명(옵션)</label>
+                <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="설명" />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium mb-2">미디어 유형</label>
+                <Select value={mediaType} onValueChange={(v) => { setMediaType(v); /* 이미지/영상 값 보존 */ }}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="image">이미지</SelectItem>
+                    <SelectItem value="video">영상</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 이미지형 */}
+              {mediaType === 'image' && (
+                <div className="md:col-span-2 space-y-3">
+                  <label className="block text-sm font-medium">이미지 업로드(여러 장 가능, 최대 10개)</label>
+                  <div className="flex items-center gap-3">
+                    <label className="px-4 py-2 border rounded cursor-pointer hover:bg-gray-50 inline-flex items-center gap-2">
+                      <Upload className="w-4 h-4" /> 파일 선택
+                      <input type="file" multiple accept="image/*" onChange={onPickImages} className="hidden" />
+                    </label>
+                    {imgUploading && <span className="text-sm text-gray-500"><Spinner /> 업로드 중…</span>}
+                  </div>
+                  {imageUrls.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {imageUrls.map((u, i) => (
+                        <div key={u + i} className="relative">
+                          <img src={u} className="w-full h-24 object-cover rounded border" />
+                          <button
+                            className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white"
+                            onClick={() => setImageUrls((prev) => prev.filter((_, idx) => idx !== i))}
+                          >×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 영상형 */}
+              {mediaType === 'video' && (
+                <div className="md:col-span-2 space-y-3">
+                  <label className="block text-sm font-medium">유튜브 URL 또는 영상 파일 업로드(둘 중 하나)</label>
+                  <Input value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." />
+                  <div className="flex items-center gap-3">
+                    <label className="px-4 py-2 border rounded cursor-pointer hover:bg-gray-50 inline-flex items-center gap-2">
+                      <Video className="w-4 h-4" /> 영상 파일 업로드
+                      <input type="file" accept="video/*" onChange={onPickVideo} className="hidden" />
+                    </label>
+                    {videoUploading && <span className="text-sm text-gray-500"><Spinner /> 업로드 중…</span>}
+                  </div>
+                  {videoFile && <div className="text-sm text-gray-600">파일: {videoFile.name}</div>}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <Button onClick={submit} className="bg-blue-600 hover:bg-blue-700">
+                {isEdit ? '수정 저장' : '등록'}
+              </Button>
+              <Button onClick={resetForm} variant="outline">초기화</Button>
+            </div>
           </div>
         </div>
       </main>

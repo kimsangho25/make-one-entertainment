@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate  } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Menu, X, Phone } from "lucide-react";
 
@@ -8,6 +8,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -19,6 +20,13 @@ export default function Header() {
     // 페이지 이동 시 모바일 메뉴 닫기
     setIsMobileMenuOpen(false);
   }, [location]);
+
+  const handlePortfolioClick = (e) => {
+    if (e.shiftKey && e.altKey) {
+      e.preventDefault();            // 기본 라우팅 막기
+      navigate('/Admin');      // 관리자 페이지로 이동
+    }
+  };
 
   return (
     <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
@@ -33,7 +41,9 @@ export default function Header() {
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to={createPageUrl("Photos")} className="text-gray-700 hover:text-gray-900 font-medium">포트폴리오</Link>
+            <Link to={createPageUrl("Photos")} onClick={handlePortfolioClick} className="text-gray-700 hover:text-gray-900 font-medium">
+              포트폴리오
+            </Link>
             <Link to={createPageUrl("Review")} className="text-gray-700 hover:text-gray-900 font-medium">고객리뷰</Link>
             
             <a 
@@ -60,7 +70,9 @@ export default function Header() {
         {isMobileMenuOpen && (
           <div className="md:hidden">
             <nav className="flex flex-col space-y-2 px-6 py-6">
-              <Link to={createPageUrl("Photos")} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">포트폴리오</Link>
+              <Link to={createPageUrl("Photos")} onClick={handlePortfolioClick} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">
+                포트폴리오
+              </Link>
               <Link to={createPageUrl("Review")} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">고객리뷰</Link>
               
               <a 

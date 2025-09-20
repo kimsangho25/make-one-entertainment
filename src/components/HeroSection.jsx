@@ -1,14 +1,16 @@
 
 import React from "react";
+import { useNavigate  } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import ImageCarousel from "./ImageCarousel";
 
 export default function HeroSection() {
-  const scrollToContact = () => {
-    const element = document.getElementById('contact');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+
+  const navigate = useNavigate();
+
+  const scrollToContact = (e) => {
+    e.preventDefault();
+    navigate('/Review');
   };
 
   // 실제 메이크원 행사 사진들로 업데이트
@@ -88,7 +90,7 @@ export default function HeroSection() {
           <button
             onClick={scrollToContact}
             className="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl flex items-center gap-3">
-            견적문의
+            리뷰하기
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>

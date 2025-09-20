@@ -6,7 +6,7 @@ export default function ProjectsSection() {
   const videos = [
     {
       id: 1,
-      title: "Corporate Innovation Summit 2024",
+      title: "여기임",
       embedUrl: "https://drive.google.com/file/d/1_NXoC18XeBFB4X58QJiCQcdDEODTsBRN/preview",
       date: "2024.03.15",
       participants: "500+",
