@@ -2,67 +2,67 @@ import React from "react";
 import { ArrowRight, Calendar, Users, MapPin, Play, ExternalLink } from "lucide-react";
 
 export default function ProjectsSection() {
-  // Google Drive 링크를 iframe embed 가능한 형태로 변환
+  // YouTube 링크를 iframe embed 가능한 형태로 변환
   const videos = [
     {
       id: 1,
-      title: "여기임",
-      embedUrl: "https://drive.google.com/file/d/1_NXoC18XeBFB4X58QJiCQcdDEODTsBRN/preview",
-      date: "2024.03.15",
-      participants: "500+",
-      location: "서울 코엑스",
-      description: "글로벌 기업의 혁신 전략을 공유하는 대규모 컨퍼런스",
-      category: "컨퍼런스"
+      title: "전국 TOP 10 가요쇼 사전MC 하이라이트 소개영상",
+      embedUrl: "https://www.youtube.com/embed/mDkiAmACZIw",
+      date: "2024.01.15",
+      participants: "1000+",
+      location: "전국 방송",
+      description: "전국 TOP 10 가요쇼 사전MC 하이라이트 소개영상",
+      category: "가요쇼"
     },
     {
       id: 2,
-      title: "Digital Workplace Seminar",
-      embedUrl: "https://drive.google.com/file/d/1BWiNQHAhTNT_01fbmdV0D1ugTBUZLrpm/preview",
-      date: "2024.02.28",
-      participants: "200+",
-      location: "강남 세미나실",
-      description: "디지털 워크플레이스 구축을 위한 실무 세미나",
-      category: "세미나"
+      title: "기업행사, 워크샵, 체육대회 하이라이트 영상 모음집",
+      embedUrl: "https://www.youtube.com/embed/PdmrTMWodHU",
+      date: "2024.02.20",
+      participants: "500+",
+      location: "다양한 기업",
+      description: "기업행사, 워크샵, 체육대회 하이라이트 영상 모음집",
+      category: "기업행사"
     },
     {
       id: 3,
-      title: "New Year Celebration Gala",
-      embedUrl: "https://drive.google.com/file/d/1Afk8qC-Y_0p-cmdIl6kwCg64HTOsNzjX/preview",
-      date: "2024.01.20",
+      title: "대학생 레크레이션 현장 스케치 영상",
+      embedUrl: "https://drive.google.com/file/d/1-EZKnWM6PVvRXXxPM-rPBImOQlhuVgmL/preview",
+      date: "2024.03.10",
       participants: "300+",
-      location: "롯데호텔 서울",
-      description: "신년 맞이 기업 갈라 디너 및 네트워킹 이벤트",
-      category: "이벤트"
+      location: "대학교",
+      description: "대학생 레크레이션 현장 스케치 영상",
+      category: "레크레이션"
     },
     {
       id: 4,
-      title: "Leadership Excellence Awards",
-      embedUrl: "https://drive.google.com/file/d/1Ls-9ljAL6tj3fX1pyVTWN0U-OTv9K69e/preview",
-      date: "2023.12.10",
-      participants: "400+",
-      location: "잠실 전문기획",
-      description: "리더십 우수성을 인정하는 시상식 기획 및 진행",
-      category: "시상식"
+      title: "영어진행 오징어게임 프로그램 및 레크레이션 영상",
+      embedUrl: "https://www.youtube.com/embed/_p9dCf9XXjg",
+      date: "2024.04.05",
+      participants: "200+",
+      location: "영어캠프",
+      description: "영어진행 오징어게임 프로그램 및 레크레이션 영상",
+      category: "영어프로그램"
     },
     {
       id: 5,
-      title: "Team Building Workshop",
-      embedUrl: "https://drive.google.com/file/d/1qmM_c0Q-Apjp4qniESatoXK-lP5CMbLh/preview",
-      date: "2024.04.10",
-      participants: "150+",
-      location: "강남 스튜디오",
-      description: "창의적 팀빌딩과 협업을 위한 특별한 워크샵",
-      category: "팀빌딩"
+      title: "청소년 레크레이션&축제&체육대회 진행 하이라이트",
+      embedUrl: "https://www.youtube.com/embed/-U0qvsXEhGE",
+      date: "2024.05.12",
+      participants: "400+",
+      location: "청소년센터",
+      description: "청소년 레크레이션&축제&체육대회 진행 하이라이트",
+      category: "청소년행사"
     },
     {
       id: 6,
-      title: "Cultural Festival 2024",
-      embedUrl: "https://drive.google.com/file/d/1tExhweRmLiaHHTYxOLpRbiC9veJHlaMx/preview",
-      date: "2024.05.20",
-      participants: "800+",
-      location: "한강공원",
-      description: "다채로운 문화 공연과 함께하는 대규모 축제",
-      category: "축제"
+      title: "김용명 개그맨과 함께하는 유튜브 촬영",
+      embedUrl: "https://www.youtube.com/embed/s8hR03Bpa3o",
+      date: "2024.06.08",
+      participants: "150+",
+      location: "유튜브 스튜디오",
+      description: "김용명 개그맨과 함께하는 유튜브 촬영",
+      category: "유튜브"
     }
   ];
 

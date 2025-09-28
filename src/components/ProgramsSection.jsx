@@ -18,7 +18,7 @@ const programData = {
   },
 
   "축제": {
-    url: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ad8266d3f7a3e6710e5720/61899d624_image.png",
+    url: "/server/uploads/KakaoTalk_Photo_2025-09-28-15-38-51 001jpeg.jpeg",
     description: "화려한 조명과 함께하는 감동적인 축제 무대"
   },
 
@@ -38,7 +38,7 @@ const programData = {
   },
 
   "공식행사": {
-    url: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ad8266d3f7a3e6710e5720/bc8e2462d_image.png",
+    url: "/server/uploads/KakaoTalk_Photo_2025-09-28-15-38-53 002jpeg.jpeg",
     description: "교육부 한국청년기업가정신센터 공식행사 - 전문적이고 품격있는 정부 공식 행사"
   }
 };
