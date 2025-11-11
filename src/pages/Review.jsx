@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getClientId } from '@/lib/clientId';
 
 //로컬에서 운영으로 변경할 때 환경변수 만들어서 채우기
-const API = import.meta.env.VITE_BACKEND_BASE || "http://localhost:8765";
+const API = import.meta.env.VITE_BACKEND_BASE || "http://1.224.178.190:5173";
 
 const baseHeaders = () => ({
   'Content-Type': 'application/json',

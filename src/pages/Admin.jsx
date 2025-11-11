@@ -8,7 +8,7 @@ import { Upload, Image as ImageIcon, Video, Check, Trash2, Pencil, Plus, Tag, Ca
 import { getClientId } from '@/lib/clientId';
 
 // 로컬/운영 전환은 VITE_BACKEND_BASE 로
-const API = import.meta.env.VITE_BACKEND_BASE || 'http://localhost:8765';
+const API = import.meta.env.VITE_BACKEND_BASE || 'http://1.224.178.190:5173';
 
 const baseHeaders = () => ({
   'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export default function AdminPage() {
   const [eventDate, setEventDate] = useState('');
   const [mediaType, setMediaType] = useState('image'); // image | video
   const [description, setDescription] = useState('');
-  const [displayOrder, setDisplayOrder] = useState(0);
+  const [displayOrder, setDisplayOrder] = useState(1);
 
   // 이미지형
   const [imageUrls, setImageUrls] = useState([]); // string[]
@@ -77,7 +77,7 @@ export default function AdminPage() {
     setEventDate('');
     setMediaType('image');
     setDescription('');
-    setDisplayOrder(0);
+    setDisplayOrder(1);
     setImageUrls([]);
     setYoutubeUrl('');
     setVideoFile(null);

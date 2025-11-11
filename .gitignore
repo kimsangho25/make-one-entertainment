@@ -8,6 +8,10 @@ yarn-error.log*
 dist/
 build/
 
+# 서버 파일 업로드 디렉토리
+server/uploads/
+server/log/
+
 # Environment variables
 .env
 .env.local

@@ -9,7 +9,7 @@ import { Camera, Tag, Calendar, X, ChevronLeft, ChevronRight, Play } from 'lucid
 import { getClientId} from '@/lib/clientId';
 
 
-const API = import.meta.env.VITE_BACKEND_BASE || "http://localhost:8765";
+const API = import.meta.env.VITE_BACKEND_BASE || "http://1.224.178.190:5173";
 
 const baseHeaders = () => ({
   'Content-Type': 'application/json',

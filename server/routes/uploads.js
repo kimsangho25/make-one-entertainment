@@ -25,7 +25,8 @@ router.post('/', upload.single('file'), (req, res) => {
     if (!req.file) return res.status(400).json({ ok:false, error:'no_file' });
 
     //개발
-    const publicBase = 'http://localhost:8765';
+    //const publicBase = 'http://localhost:8765';
+    const publicBase = 'http://1.224.178.190:5173';
     const file_url = `${publicBase}/uploads/${req.file.filename}`;
     return res.json({ ok: true, file_url });
 });
