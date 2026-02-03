@@ -12,6 +12,8 @@ import Auth from "./Auth";
 
 import Admin from "./Admin";
 
+import PhotoDetailPage from "./PhotoDetailPage";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -27,6 +29,8 @@ const PAGES = {
     Auth: Auth,
     
     Admin: Admin,
+
+    PhotoDetailPage: PhotoDetailPage,
     
 }
 
@@ -52,7 +56,7 @@ function PagesContent() {
         <Layout currentPageName={currentPage}>
             <Routes>            
                 
-                    <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home />} />
                 
                 
                 <Route path="/Home" element={<Home />} />
@@ -66,6 +70,8 @@ function PagesContent() {
                 <Route path="/Auth" element={<Auth />} />
                 
                 <Route path="/Admin" element={<Admin />} />
+
+                <Route path="/Photos/:id" element={<PhotoDetailPage />} />
                 
             </Routes>
         </Layout>

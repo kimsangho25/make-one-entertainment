@@ -19,21 +19,21 @@ export default function AboutSection() {
       iconColor: "text-orange-500",
       iconBgColor: "bg-orange-50",
       title: "#소외되는 팀원들",
-      description: "직원들 간의 소통이 부족하고 팀워크가 형성되지 않아 업무 효율성이 떨어진다"
+      description: "직원들 간의 소통이 부족하고 팀워크가 형성되지 않아 \n 업무 효율성이 떨어진다"
     },
     {
       icon: Calendar,
       iconColor: "text-orange-500",
       iconBgColor: "bg-orange-50",
       title: "#뻔한 행사 기획",
-      description: "매번 비슷한 행사로 지겨움과 참여도가 낮고 새로운 아이디어가 부족하다"
+      description: "매번 비슷한 행사로 지겨움과 참여도가 낮고 새로운 \n 아이디어가 부족하다"
     },
     {
       icon: Clock,
       iconColor: "text-yellow-500",
       iconBgColor: "bg-yellow-50",
       title: "#시간과 비용 부담",
-      description: "행사 준비에 많은 시간과 비용이 들어가서 만족스런 결과를 얻기 어렵다"
+      description: "행사 준비에 많은 시간과 \n 비용이 들어가서 만족스런 \n 결과를 얻기 어렵다"
     }
   ];
 
@@ -70,7 +70,12 @@ export default function AboutSection() {
                 
                 {/* 설명 */}
                 <p className="text-gray-600 leading-relaxed text-xl">
-                  {concern.description}
+                  {concern.description.split('\n').map((line, lineIndex) => (
+                    <React.Fragment key={lineIndex}>
+                      {line}
+                      {lineIndex < concern.description.split('\n').length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
                 </p>
               </div>
             ))}

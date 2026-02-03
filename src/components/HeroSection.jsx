@@ -77,7 +77,7 @@ export default function HeroSection() {
           <span className="text-5xl mb-4 text-lg font-black block sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tighter leading-[0.85]">MAKE ONE<br />ENTERTAINMENT
           </span>
           <span className="block text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-normal text-gray-200 leading-relaxed px-4 sm:px-6 md:px-0">
-            모두가 하나 되는 순간, 메이크원이 만듭니다
+            10년 경력에 누적 2000건이 넘는 기업행사 전문업체
           </span>
         </h1>
 
@@ -86,17 +86,17 @@ export default function HeroSection() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
+        {/* <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
           <button
             onClick={scrollToContact}
             className="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl flex items-center gap-3">
             리뷰하기
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
-        </div>
+        </div> */}
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="absolute left-1/2 transform -translate-x-1/2 animate-bounce">
           <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
             <div className="w-1 h-3 bg-white/70 rounded-full mt-2 animate-pulse"></div>
           </div>

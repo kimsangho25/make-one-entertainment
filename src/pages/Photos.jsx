@@ -1,15 +1,12 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 // import { Photo } from '@/api/entities';
 import { createPageUrl } from '@/utils';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { Camera, Tag, Calendar, X, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { Camera, Tag, Calendar, X, ChevronLeft, ChevronRight, Play, PlayCircle } from 'lucide-react';
 import { getClientId} from '@/lib/clientId';
-
-
-const API = import.meta.env.VITE_BACKEND_BASE || "http://1.224.178.190:5173";
 
 const baseHeaders = () => ({
   'Content-Type': 'application/json',
@@ -58,117 +55,161 @@ const normalize = (row) => {
   };
 };
 
-function MediaModal({ open, onClose, media }) {
-  // ✅ 훅은 항상 실행
-  const [idx, setIdx] = useState(0);
+// function MediaModal({ open, onClose, media }) {
+//   // ✅ 훅은 항상 실행
+//   const [idx, setIdx] = useState(0);
 
-  // 이미지/비디오 판별과 안전한 이미지 배열
-  const mediaType = media?.mediaType;
-  const isImage = mediaType === 'image';
-  const isVideo = mediaType === 'video';
+//   // 이미지/비디오 판별과 안전한 이미지 배열
+//   const mediaType = media?.mediaType;
+//   const isImage = mediaType === 'image';
+//   const isVideo = mediaType === 'video';
 
-  const images = useMemo(() => {
-    const raw = media?.imageUrls ?? media?.image_urls ?? media?.images ?? [];
-    return Array.isArray(raw) ? raw.filter(Boolean) : [];
-  }, [media]);
+//   const images = useMemo(() => {
+//     const raw = media?.imageUrls ?? media?.image_urls ?? media?.images ?? [];
+//     return Array.isArray(raw) ? raw.filter(Boolean) : [];
+//   }, [media]);
 
-  // 열릴 때/아이템 바뀔 때 인덱스 리셋
-  useEffect(() => {
-    if (open) setIdx(0);
-  }, [open, media?.id]);
+//   // 열릴 때/아이템 바뀔 때 인덱스 리셋
+//   useEffect(() => {
+//     if (open) setIdx(0);
+//   }, [open, media?.id]);
 
-  // 슬라이드 네비게이션
-  const prev = useCallback(() => {
-    if (images.length > 0) setIdx((i) => (i - 1 + images.length) % images.length);
-  }, [images.length]);
+//   // 슬라이드 네비게이션
+//   const prev = useCallback(() => {
+//     if (images.length > 0) setIdx((i) => (i - 1 + images.length) % images.length);
+//   }, [images.length]);
 
-  const next = useCallback(() => {
-    if (images.length > 0) setIdx((i) => (i + 1) % images.length);
-  }, [images.length]);
+//   const next = useCallback(() => {
+//     if (images.length > 0) setIdx((i) => (i + 1) % images.length);
+//   }, [images.length]);
 
-  // ✅ 훅 선언이 끝난 뒤에 가드
-  if (!open || !media) return null;
+//   // Tiptap JSON을 HTML로 변환하는 로직 추가
+//   const renderedDescription = useMemo(() => {
+//     if (!media?.description) return null;
 
-  const ytId = (url = '') => {
-    const m =
-      url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/) ||
-      url.match(/[?&]v=([A-Za-z0-9_-]{6,})/) ||
-      url.match(/\/embed\/([A-Za-z0-9_-]{6,})/);
-    return m ? m[1] : null;
-  };
+//     let contentJson = null;
+//     const descriptionData = media.description;
 
-  return (
-    <div className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="p-5 border-b">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold">{media.title}</h3>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-800">닫기</button>
-          </div>
-          <div className="text-sm text-gray-500 mt-1 flex gap-4">
-            <span className="flex items-center gap-1"><Tag size={14} /> {media.category}</span>
-            {media.eventDate && (
-              <span className="flex items-center gap-1"><Calendar size={14} /> {media.eventDate}</span>
-            )}
-          </div>
-        </div>
+//     try {
+//       // 1. 이미 객체 형태라면 그대로 사용
+//       if (typeof descriptionData === 'object' && descriptionData !== null) {
+//         contentJson = descriptionData;
+//       } 
+//       // 2. 문자열인데 JSON 형태라면 파싱
+//       else if (typeof descriptionData === 'string' && descriptionData.trim().startsWith('{')) {
+//         contentJson = JSON.parse(descriptionData);
+//       } 
+//       // 3. 그 외(일반 텍스트 등)는 Tiptap 구조로 래핑
+//       else {
+//         contentJson = {
+//           type: 'doc',
+//           content: [{ 
+//             type: 'paragraph', 
+//             content: [{ type: 'text', text: String(descriptionData) }] 
+//           }]
+//         };
+//       }
 
-        <div className="p-5">
-          {isImage && images.length > 0 && (
-            <>
-              <div className="relative">
-                <img src={images[idx]} alt="" className="w-full max-h-[60vh] object-contain rounded-lg" />
-                {images.length > 1 && (
-                  <>
-                    <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded">‹</button>
-                    <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded">›</button>
-                  </>
-                )}
-              </div>
-              {images.length > 1 && (
-                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-4">
-                  {images.map((u, i) => (
-                    <button key={u + i} onClick={() => setIdx(i)} className={`border rounded overflow-hidden ${i === idx ? 'ring-2 ring-blue-500' : ''}`}>
-                      <img src={u} className="w-full h-20 object-cover" alt="" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+//       // HTML 변환 실행 (RENDER_EXTENSIONS는 컴포넌트 외부에서 정의된 것 사용)
+//       return generateHTML(contentJson, RENDER_EXTENSIONS);
 
-          {isVideo && (
-            <div className="w-full aspect-video">
-              {ytId(media.mediaUrl || media.media_url) ? (
-                <iframe
-                  className="w-full h-full rounded-lg"
-                  src={`https://www.youtube.com/embed/${ytId(media.mediaUrl || media.media_url)}`}
-                  title={media.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <video src={media.mediaUrl || media.media_url} className="w-full h-full rounded-lg" controls />
-              )}
-            </div>
-          )}
+//     } catch (e) {
+//       console.error("Failed to process description:", e);
+//       // 에러 발생 시 사용자에게 안전한 폴백(Fallback) UI 제공
+//       return `<p>${typeof descriptionData === 'string' ? descriptionData : '내용을 불러올 수 없습니다.'}</p>`;
+//     }
+//   }, [media?.description]);
 
-          {!isImage && !isVideo && <div className="text-center text-gray-500 py-16">지원하지 않는 미디어입니다.</div>}
-        </div>
-      </div>
-    </div>
-  );
-}
+//   // ✅ 훅 선언이 끝난 뒤에 가드
+//   if (!open || !media) return null;
+
+//   const ytId = (url = '') => {
+//     const m =
+//       url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/) ||
+//       url.match(/[?&]v=([A-Za-z0-9_-]{6,})/) ||
+//       url.match(/\/embed\/([A-Za-z0-9_-]{6,})/);
+//     return m ? m[1] : null;
+//   };
+
+//   return (
+//     <div className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
+//       <div className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+//         <div className="p-5 border-b">
+//           <div className="flex items-center justify-between">
+//             <h3 className="text-xl font-semibold">{media.title}</h3>
+//             <button onClick={onClose} className="text-gray-500 hover:text-gray-800">닫기</button>
+//           </div>
+//           <div className="text-sm text-gray-500 mt-1 flex gap-4">
+//             <span className="flex items-center gap-1"><Tag size={14} /> {media.category}</span>
+//             {media.eventDate && (
+//               <span className="flex items-center gap-1"><Calendar size={14} /> {media.eventDate}</span>
+//             )}
+//           </div>
+//         </div>
+//         <div className="p-5">
+//           {renderedDescription && (
+//             <div 
+//               className="mb-4 p-4 bg-gray-50 rounded-lg prose max-w-full"
+//               dangerouslySetInnerHTML={{ __html: renderedDescription }} 
+//             />
+//           )}
+//         </div>
+//         <div className="p-5">
+//           {isImage && images.length > 0 && (
+//             <>
+//               <div className="relative">
+//                 <img src={images[idx]} alt="" className="w-full max-h-[60vh] object-contain rounded-lg" />
+//                 {images.length > 1 && (
+//                   <>
+//                     <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded">‹</button>
+//                     <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white px-3 py-2 rounded">›</button>
+//                   </>
+//                 )}
+//               </div>
+//               {images.length > 1 && (
+//                 <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-4">
+//                   {images.map((u, i) => (
+//                     <button key={u + i} onClick={() => setIdx(i)} className={`border rounded overflow-hidden ${i === idx ? 'ring-2 ring-blue-500' : ''}`}>
+//                       <img src={u} className="w-full h-20 object-cover" alt="" />
+//                     </button>
+//                   ))}
+//                 </div>
+//               )}
+//             </>
+//           )}
+
+//           {isVideo && (
+//             <div className="w-full aspect-video">
+//               {ytId(media.mediaUrl || media.media_url) ? (
+//                 <iframe
+//                   className="w-full h-full rounded-lg"
+//                   src={`https://www.youtube.com/embed/${ytId(media.mediaUrl || media.media_url)}`}
+//                   title={media.title}
+//                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+//                   allowFullScreen
+//                 />
+//               ) : (
+//                 <video src={media.mediaUrl || media.media_url} className="w-full h-full rounded-lg" controls />
+//               )}
+//             </div>
+//           )}
+
+//           {!isImage && !isVideo && <div className="text-center text-gray-500 py-16">지원하지 않는 미디어입니다.</div>}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 
 
 export default function PhotosPage() {
   const query = useQuery();
   const activeCategory = query.get('category') || '전체';
-
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalItem, setModalItem] = useState(null);
+  //const [modalOpen, setModalOpen] = useState(false);
+  //const [modalItem, setModalItem] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -182,7 +223,7 @@ export default function PhotosPage() {
       // '전체'일 때는 category 파라미터를 보내지 않음
       if (activeCategory && activeCategory !== '전체') qs.set('category', activeCategory);
 
-      const res = await fetch(`${API}/api/media?${qs.toString()}`, { headers: baseHeaders() });
+      const res = await fetch(`/api/media?${qs.toString()}`, { headers: baseHeaders() });
       const data = await res.json();
       const list = Array.isArray(data.items) ? data.items.map(normalize) : [];
       setItems(list);
@@ -190,8 +231,8 @@ export default function PhotosPage() {
     })();
   }, [activeCategory]);
 
-  const open = (m) => { setModalItem(m); setModalOpen(true); };
-  const close = () => { setModalOpen(false); setModalItem(null); };
+  //const open = (m) => { setModalItem(m); setModalOpen(true); };
+  //const close = () => { setModalOpen(false); setModalItem(null); };
 
   return (
     <>
@@ -237,7 +278,7 @@ export default function PhotosPage() {
               {items.map((m) => (
                 <button
                   key={m.id}
-                  onClick={() => open(m)}
+                  onClick={() => navigate(`/Photos/${m.id}`)}
                   className="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 text-left"
                 >
                   <div className="relative aspect-video overflow-hidden">
@@ -280,7 +321,7 @@ export default function PhotosPage() {
         </div>
       </main>
 
-      <MediaModal open={modalOpen} onClose={close} media={modalItem} />
+      {/* <MediaModal open={modalOpen} onClose={close} media={modalItem} /> */}
       <Footer />
     </>
   );

@@ -6,9 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Image as ImageIcon, Video, Check, Trash2, Pencil, Plus, Tag, Calendar, X, Loader2, Play, Pause, Link as LinkIcon } from 'lucide-react';
 import { getClientId } from '@/lib/clientId';
-
-// 로컬/운영 전환은 VITE_BACKEND_BASE 로
-const API = import.meta.env.VITE_BACKEND_BASE || 'http://1.224.178.190:5173';
+import TiptapEditor from '@/lib/TiptapEditor';
 
 const baseHeaders = () => ({
   'Content-Type': 'application/json',
@@ -45,7 +43,8 @@ export default function AdminPage() {
   const [category, setCategory] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [mediaType, setMediaType] = useState('image'); // image | video
-  const [description, setDescription] = useState('');
+  //const [description, setDescription] = useState('');
+  const [description, setDescription] = useState(null);
   const [displayOrder, setDisplayOrder] = useState(1);
 
   // 이미지형
@@ -62,7 +61,7 @@ export default function AdminPage() {
   async function load() {
     setLoading(true);
     const qs = new URLSearchParams({ sort: 'display_order,-event_date,-created_at', limit: '100' });
-    const res = await fetch(`${API}/api/media?${qs.toString()}`, { headers: baseHeaders() });
+    const res = await fetch(`/api/media?${qs.toString()}`, { headers: baseHeaders() });
     const data = await res.json();
     const items = Array.isArray(data.items) ? data.items : [];
     setList(items);
@@ -76,7 +75,8 @@ export default function AdminPage() {
     setCategory('');
     setEventDate('');
     setMediaType('image');
-    setDescription('');
+    //setDescription('');
+    setDescription(null);
     setDisplayOrder(1);
     setImageUrls([]);
     setYoutubeUrl('');
@@ -87,6 +87,32 @@ export default function AdminPage() {
     setEditing(row);
     setTitle(row.title || '');
     setCategory(row.category || '');
+
+    const rawDescription = row.description || '';
+
+    // description 처리 로직 (이전 문자열 데이터와 Tiptap JSON 데이터 호환 처리)
+    let descContent = null;
+    try {
+        // DB에서 JSON 형태로 저장된 경우 바로 파싱
+        descContent = (typeof rawDescription === 'string' && rawDescription.startsWith('{')) 
+                      ? JSON.parse(rawDescription) 
+                      : rawDescription;
+        
+        // 만약 기존 데이터가 단순 문자열이었다면, Tiptap JSON 구조로 변환하여 에디터에 로드
+        if (typeof descContent === 'string' && descContent.length > 0) {
+            descContent = {
+                type: 'doc',
+                content: [{ type: 'paragraph', content: [{ type: 'text', text: descContent }] }]
+            };
+        }
+    } catch (e) {
+        console.error("Description parsing error:", e);
+        // 파싱 실패 시 빈 문서로 처리
+        descContent = null; 
+    }
+    setDescription(descContent);
+    
+
     // 날짜는 YYYY-MM-DD로
     const rawDate = row.eventDate ?? row.event_date ?? '';
     const fmtDate = (v) => (/^\d{4}-\d{2}-\d{2}$/.test(v) ? v : (v ? new Date(v).toISOString().slice(0, 10) : ''));
@@ -94,7 +120,6 @@ export default function AdminPage() {
 
     const mt = row.mediaType || row.media_type || 'image';
     setMediaType(mt);
-    setDescription(row.description || '');
     setDisplayOrder(row.displayOrder || row.display_order || 0);
 
     // ✅ image_urls / imageUrls 모두 대응
@@ -108,7 +133,7 @@ export default function AdminPage() {
 
   const remove = async (id) => {
     if (!confirm('삭제하시겠습니까?')) return;
-    const res = await fetch(`${API}/api/media/${id}`, { method: 'DELETE', headers: baseHeaders() });
+    const res = await fetch(`/api/media/${id}`, { method: 'DELETE', headers: baseHeaders() });
     if (!res.ok) { alert('삭제 실패'); return; }
     await load();
     if (editing?.id === id) resetForm();
@@ -124,7 +149,7 @@ export default function AdminPage() {
       for (const f of files) {
         const form = new FormData();
         form.append('file', f);
-        const r = await fetch(`${API}/api/uploads`, {
+        const r = await fetch(`/api/uploads`, {
           method: 'POST',
           headers: { 'X-Client-Id': getClientId() },
           body: form,
@@ -151,7 +176,7 @@ export default function AdminPage() {
     try {
       const form = new FormData();
       form.append('file', f);
-      const r = await fetch(`${API}/api/uploads`, {
+      const r = await fetch(`/api/uploads`, {
         method: 'POST',
         headers: { 'X-Client-Id': getClientId() },
         body: form,
@@ -172,11 +197,13 @@ export default function AdminPage() {
   const submit = async () => {
     if (!title || !category || !mediaType) { alert('필수값 누락'); return; }
 
+    const descriptionString = description ? JSON.stringify(description) : null;
+
     const payload = {
       title,
       category,
       eventDate: eventDate || null,
-      description: description || null,
+      description: descriptionString,
       mediaType,
       displayOrder: Number(displayOrder) || 0,
       ...(mediaType === 'image'
@@ -192,8 +219,8 @@ export default function AdminPage() {
       alert('유튜브 URL 또는 영상 파일을 업로드하세요'); return;
     }
 
-    const url = isEdit ? `${API}/api/media/${editing.id}` : `${API}/api/media`;
-    const method = isEdit ? 'PUT' : 'POST';
+    const url = isEdit ? `/api/media/${editing.id}` : `/api/media`;
+    const method = isEdit ? 'PATCH' : 'POST';
 
     const res = await fetch(url, { method, headers: baseHeaders(), body: JSON.stringify(payload) });
     if (!res.ok) { alert('저장 실패'); return; }
@@ -293,7 +320,10 @@ export default function AdminPage() {
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium mb-2">설명(옵션)</label>
-                <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="설명" />
+                <TiptapEditor 
+                  content={description} // JSON 객체 전달
+                  onChange={setDescription} // 변경된 JSON 객체를 State에 저장
+                />
               </div>
 
               <div className="md:col-span-2">

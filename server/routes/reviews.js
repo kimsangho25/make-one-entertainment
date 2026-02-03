@@ -2,121 +2,210 @@ import express from 'express';
 import { pool } from '../db.js';
 import { ipHash } from '../utils/ipHash.js';
 import { mapSort, parsePaging } from '../utils/listing.js';
+import { deletePhysicalFile } from './uploads.js';
 
 const router = express.Router();
 
+// key -> 프론트 URL
+function fileProxyUrl(key) {
+  return `/api/files?key=${encodeURIComponent(key)}`;
+}
+
+// body/DB 값 -> key 추출
+function extractKey(v) {
+  if (!v) return null;
+  const s = String(v);
+
+  if (s.startsWith("uploads/")) return s;
+
+  if (s.startsWith("/api/files")) {
+    try {
+      const u = new URL("http://dummy" + s);
+      return u.searchParams.get("key");
+    } catch {
+      return null;
+    }
+  }
+
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const u = new URL(s);
+      if (u.pathname.startsWith("/api/files")) return u.searchParams.get("key");
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+const toKeyArr = (v) => {
+  const arr = Array.isArray(v) ? v : (v ? [v] : []);
+  return arr.map(extractKey).filter(Boolean);
+};
+
+const toPublicArr = (keys) => (Array.isArray(keys) ? keys.map(k => fileProxyUrl(String(k))) : keys);
+
 // 헬퍼: 안전 파싱
-const toStrArr = (v) => Array.isArray(v) ? v.map(String) : (v ? [String(v)] : []);
+//const toStrArr = (v) => Array.isArray(v) ? v.map(String) : (v ? [String(v)] : []);
 
 // 리뷰 목록 조회
-router.get('/', async (req, res) => {
-    try {
-        const orderBy = mapSort(req.query.sort);
-        const { page, limit, offset } = parsePaging(req.query);
+router.get("/", async (req, res) => {
+  try {
+    const orderBy = mapSort(req.query.sort);
+    const { page, limit, offset } = parsePaging(req.query);
 
-        const totalQ = await pool.query('SELECT COUNT(*)::int AS total FROM moe.reviews WHERE status = $1', ['published']);
-        const listQ  = await pool.query(
-        `SELECT id, author, rating, content, event_type AS "eventType",
-                event_date AS "eventDate", image_urls, likes_count, reports_count,
-                created_at, updated_at
-            FROM moe.reviews
-            WHERE status = $1
-            ORDER BY ${orderBy}
-            LIMIT $2 OFFSET $3`, ['published', limit, offset]
-        );
-        res.json({ items: listQ.rows, page, limit, total: totalQ.rows[0].total });
-    } catch (e) {
-        console.error(e);
-        res.status(500).json({ ok:false, error:'server_error' });
-    }
+    const metaQ = await pool.query(
+      `SELECT COUNT(*)::int AS total_count,
+              COALESCE(AVG(rating), 0)::numeric(10, 2) AS average_rating
+         FROM moe.reviews
+        WHERE status = $1`,
+      ["published"]
+    );
+    const { total_count, average_rating } = metaQ.rows[0];
+
+    const listQ = await pool.query(
+      `SELECT id, author, rating, content, event_type AS "eventType",
+              event_date AS "eventDate", image_urls, likes_count, reports_count,
+              created_at, updated_at
+         FROM moe.reviews
+        WHERE status = $1
+        ORDER BY ${orderBy}
+        LIMIT $2 OFFSET $3`,
+      ["published", limit, offset]
+    );
+
+    const totalPages = Math.ceil(total_count / limit);
+
+    // 응답에서만 /api/files로 변환
+    const items = listQ.rows.map(r => ({
+      ...r,
+      image_urls: toPublicArr(r.image_urls)
+    }));
+
+    res.json({
+      items,
+      meta: {
+        total_count,
+        average_rating,
+        limit,
+        current_page: page,
+        total_pages: totalPages
+      }
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok:false, error:"server_error" });
+  }
 });
 
-// 리뷰 상세 조회
-router.get('/:id', async (req, res) => {
+// 단건
+router.get("/:id", async (req, res) => {
   try {
     const q = await pool.query(
       `SELECT id, author, rating, content, event_type AS "eventType",
               event_date AS "eventDate", image_urls, likes_count, reports_count,
               created_at, updated_at
-         FROM moe.reviews WHERE id = $1`, [req.params.id]
+         FROM moe.reviews
+        WHERE id = $1`,
+      [req.params.id]
     );
-    if (!q.rowCount) return res.status(404).json({ ok:false, error:'not_found' });
-    res.json(q.rows[0]);
+    if (!q.rows.length) return res.status(404).json({ ok:false, error:"not_found" });
+
+    const row = q.rows[0];
+    res.json({
+      ...row,
+      image_urls: toPublicArr(row.image_urls)
+    });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok:false, error:'server_error' });
+    res.status(500).json({ ok:false, error:"server_error" });
   }
 });
 
 // 생성(익명)
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { author, rating, content, eventType, eventDate, image_urls } = req.body || {};
-    if (!author || !rating || !content) return res.status(400).json({ ok:false, error:'missing_required_fields' });
-    if (Number(rating) < 1 || Number(rating) > 5) return res.status(400).json({ ok:false, error:'invalid_rating' });
+    if (!author || !rating || !content) return res.status(400).json({ ok:false, error:"missing_required_fields" });
+    if (Number(rating) < 1 || Number(rating) > 5) return res.status(400).json({ ok:false, error:"invalid_rating" });
 
-    const imgs = toStrArr(image_urls).slice(0, 5);
-    const ip = req.headers['x-forwarded-for']?.toString().split(',')[0]?.trim() || req.socket.remoteAddress || '';
-    const ua = req.headers['user-agent'] || '';
+    // DB에는 key만 저장
+    const imgs = toKeyArr(image_urls).slice(0, 5);
+
+    const ip = req.headers["x-forwarded-for"]?.toString().split(",")[0]?.trim() || req.socket.remoteAddress || "";
+    const ua = req.headers["user-agent"] || "";
     const iphash = ipHash(ip);
 
     const q = await pool.query(
-      `INSERT INTO moe.reviews(author, rating, content, event_type, event_date, image_urls, created_ip_hash, created_ua)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      `INSERT INTO moe.reviews (author, rating, content, event_type, event_date, image_urls, status, created_ip_hash, created_ua)
+       VALUES ($1,$2,$3,$4,$5,$6,'published',$7,$8)
        RETURNING id`,
-      [author, Number(rating), content, eventType || null, eventDate || null, imgs, iphash, ua]
+      [author, Number(rating), content, eventType ?? null, eventDate ?? null, imgs.length ? imgs : null, iphash, ua]
     );
 
-    res.status(201).json({ ok:true, id: q.rows[0].id });
+    res.json({ ok:true, id: q.rows[0].id });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok:false, error:'server_error' });
+    res.status(500).json({ ok:false, error:"server_error" });
   }
 });
 
-// (옵션) 수정/삭제는 운영자만 쓸 거면 나중에 보호 추가
-router.put('/:id', async (req, res) => {
+// 수정(부분)
+router.patch("/:id", async (req, res) => {
   try {
-    const { author, rating, content, eventType, eventDate, image_urls, status } = req.body || {};
-    const imgs = image_urls ? toStrArr(image_urls).slice(0,5) : undefined;
+    const id = req.params.id;
+    const body = req.body || {};
 
     const fields = [];
-    const vals = [];
-    let i = 1;
+    const params = [];
+    const set = (sql, val) => { params.push(val); fields.push(`${sql} = $${params.length}`); };
 
-    if (author !== undefined) { fields.push(`author = $${i++}`); vals.push(author); }
-    if (rating !== undefined) { 
-      if (Number(rating) < 1 || Number(rating) > 5) return res.status(400).json({ ok:false, error:'invalid_rating' });
-      fields.push(`rating = $${i++}`); vals.push(Number(rating));
+    if (body.author !== undefined) set("author", String(body.author));
+    if (body.rating !== undefined) set("rating", Number(body.rating));
+    if (body.content !== undefined) set("content", String(body.content));
+    if (body.eventType !== undefined) set("event_type", body.eventType);
+    if (body.eventDate !== undefined) set("event_date", body.eventDate);
+
+    if (body.image_urls !== undefined) {
+      const keys = toKeyArr(body.image_urls).slice(0, 5);
+      set("image_urls", keys.length ? keys : null);
     }
-    if (content !== undefined) { fields.push(`content = $${i++}`); vals.push(content); }
-    if (eventType !== undefined) { fields.push(`event_type = $${i++}`); vals.push(eventType || null); }
-    if (eventDate !== undefined) { fields.push(`event_date = $${i++}`); vals.push(eventDate || null); }
-    if (imgs !== undefined) { fields.push(`image_urls = $${i++}`); vals.push(imgs); }
-    if (status !== undefined) { fields.push(`status = $${i++}`); vals.push(status); }
 
     if (!fields.length) return res.json({ ok:true });
 
-    vals.push(req.params.id);
-    const q = await pool.query(`UPDATE moe.reviews SET ${fields.join(', ')} WHERE id = $${i}`, vals);
-    if (!q.rowCount) return res.status(404).json({ ok:false, error:'not_found' });
+    params.push(id);
+    await pool.query(`UPDATE moe.reviews SET ${fields.join(", ")}, updated_at = now() WHERE id = $${params.length}`, params);
+
     res.json({ ok:true });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok:false, error:'server_error' });
+    res.status(500).json({ ok:false, error:"server_error" });
   }
 });
 
-router.delete('/:id', async (req, res) => {
+// 삭제 (파일도 같이 삭제)
+router.delete("/:id", async (req, res) => {
   try {
-    const q = await pool.query('DELETE FROM moe.reviews WHERE id = $1', [req.params.id]);
-    if (!q.rowCount) return res.status(404).json({ ok:false, error:'not_found' });
+    const id = req.params.id;
+
+    const q = await pool.query(`SELECT image_urls FROM moe.reviews WHERE id = $1`, [id]);
+    if (!q.rows.length) return res.status(404).json({ ok:false, error:"not_found" });
+
+    const keys = q.rows[0].image_urls;
+    if (Array.isArray(keys)) {
+      for (const k of keys) await deletePhysicalFile(k);
+    }
+
+    await pool.query(`DELETE FROM moe.reviews WHERE id = $1`, [id]);
     res.json({ ok:true });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok:false, error:'server_error' });
+    res.status(500).json({ ok:false, error:"server_error" });
   }
 });
+
 
 // 좋아요 추가 (client_id 필수)
 router.post('/:id/likes', async (req, res) => {

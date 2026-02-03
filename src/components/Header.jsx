@@ -54,8 +54,8 @@ export default function Header() {
               010-8771-8434
             </a>
             
-            <Link to={createPageUrl("Auth")} className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition-all hover:scale-105 shadow-lg">
-              로그인
+            <Link to="/#contact" className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition-all hover:scale-105 shadow-lg">
+              견적 문의하기
             </Link>
           </nav>
 
@@ -83,8 +83,8 @@ export default function Header() {
                 010-8771-8434
               </a>
               
-              <Link to={createPageUrl("Auth")} className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-medium text-center">
-                로그인
+              <Link to="/#contact" className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-full font-medium text-center">
+                견적 문의하기
               </Link>
             </nav>
           </div>

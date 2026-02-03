@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: moe
+      POSTGRES_USER: moe_user
+      POSTGRES_PASSWORD: moe1234!
+      TZ: Asia/Seoul
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    # 보안상 외부 포트는 기본적으로 열지 마세요.
+    # 외부에서 psql로 붙어야 하면 아래 주석 해제 후 방화벽/접근제어 필수
+    ports:
+      - "5432:5432"
+  app:
+    build:
+      context: .
+      # 백엔드 Dockerfile 지정
+      dockerfile: Dockerfile.backend
+    container_name: app
+    env_file:
+      - server/.env # 필요 시
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: moe
+      PGUSER: moe_user
+      PGPASSWORD: moe1234!
+      PGSSLMODE: disable
+    depends_on:
+      - postgres
+    ports:
+      - "8765:8765" # 로컬 확인용(외부노출 원치 않으면 빼도 됨)
+    volumes:
+      - /home/make-one-entertainment/server/uploads:/app/uploads
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    container_name: web
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # (HTTPS 단계에서) 인증서 볼륨 마운트
+      - letsencrypt:/etc/letsencrypt
+      - certbot-web:/var/www/certbot
+    restart: unless-stopped
+
+  # HTTPS 발급/갱신용(7단계에서 사용)
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot-web:/var/www/certbot
+    entrypoint: sh
+    command: -c "while true; do sleep 12h; certbot renew --webroot -w /var/www/certbot --deploy-hook 'nginx -s reload'; done"
+
+volumes:
+  letsencrypt:
+  certbot-web:
+  pgdata:

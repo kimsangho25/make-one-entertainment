@@ -1,32 +1,92 @@
 // server/routes/media.js
 import express from 'express';
 import { pool } from '../db.js';
+import { deletePhysicalFile } from './uploads.js';
 
 const router = express.Router();
 
 // -------- 유틸 --------
-const required = (v) => (typeof v === 'string' ? v.trim().length > 0 : v !== undefined && v !== null);
+const required = (v) => (typeof v === "string" ? v.trim().length > 0 : v !== undefined && v !== null);
 const toStrArr = (v) =>
   Array.isArray(v) ? v.map(String).filter(Boolean)
-  : typeof v === 'string' && v.trim() ? [v.trim()]
+  : typeof v === "string" && v.trim() ? [v.trim()]
   : [];
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 
 function parsePaging(q) {
-  const page = clamp(parseInt(q.page ?? '1', 10) || 1, 1, 100000);
-  const limit = clamp(parseInt(q.limit ?? '20', 10) || 20, 1, 100);
+  const page = clamp(parseInt(q.page ?? "1", 10) || 1, 1, 100000);
+  const limit = clamp(parseInt(q.limit ?? "20", 10) || 20, 1, 100);
   const offset = (page - 1) * limit;
   return { page, limit, offset };
 }
 
-function youtubeIdFromUrl(url='') {
-  // youtu.be/xxx, youtube.com/watch?v=xxx, /embed/xxx 지원
-  const m =
-    url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/) ||
-    url.match(/[?&]v=([A-Za-z0-9_-]{6,})/) ||
-    url.match(/\/embed\/([A-Za-z0-9_-]{6,})/);
-  return m ? m[1] : null;
+function youtubeIdFromUrl(url = "") {
+  try {
+    const u = new URL(url);
+    if (u.hostname === "youtu.be") return u.pathname.replace("/", "");
+    if (u.hostname.includes("youtube.com")) return u.searchParams.get("v");
+  } catch {}
+  return null;
 }
+
+function fileProxyUrl(key) {
+  return `/api/files?key=${encodeURIComponent(key)}`;
+}
+
+// DB에 저장된 값(=key)을 프론트가 쓸 URL로 변환
+function toPublicUrl(maybeKeyOrUrl, mediaTypeHint) {
+  if (!maybeKeyOrUrl) return maybeKeyOrUrl;
+
+  const s = String(maybeKeyOrUrl);
+
+  // 유튜브는 그대로
+  if (mediaTypeHint === "video") {
+    const vid = youtubeIdFromUrl(s);
+    if (vid) return s;
+  }
+
+  // 이미 /api/files 라우트면 그대로
+  if (s.startsWith("/api/files")) return s;
+
+  // key면 /api/files로 변환
+  if (s.startsWith("uploads/")) return fileProxyUrl(s);
+
+  // 기타 URL(과거 데이터 등)은 그대로 둠
+  if (/^https?:\/\//i.test(s)) return s;
+
+  return s;
+}
+
+// 요청 바디에 들어온 값(URL or /api/files or key)에서 "key만" 뽑기
+function extractKey(v) {
+  if (!v) return null;
+  const s = String(v);
+
+  if (s.startsWith("uploads/")) return s;
+
+  if (s.startsWith("/api/files")) {
+    try {
+      const u = new URL("http://dummy" + s);
+      return u.searchParams.get("key");
+    } catch {
+      return null;
+    }
+  }
+
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const u = new URL(s);
+      if (u.pathname.startsWith("/api/files")) return u.searchParams.get("key");
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+
 function deriveThumb(row) {
   if (row.mediaType === 'image' && Array.isArray(row.imageUrls) && row.imageUrls.length) {
     return row.imageUrls[0];
@@ -38,24 +98,39 @@ function deriveThumb(row) {
   return null; // 프론트에서 플레이스홀더 처리
 }
 
+// function mapSort(sort) {
+//   const DEFAULT = `display_order DESC, event_date DESC NULLS LAST, created_at DESC`;
+//   if (!sort) return DEFAULT;
+//   const allow = new Set(['display_order','event_date','created_at','title']);
+//   const parts = String(sort).split(',').map(s => s.trim()).filter(Boolean);
+//   const mapped = parts.map(p => {
+//     const desc = p.startsWith('-');
+//     const col = desc ? p.slice(1) : p;
+//     if (!allow.has(col)) return null;
+//     const dir = desc ? 'DESC' : 'ASC';
+//     if (col === 'event_date') return `event_date ${dir} NULLS LAST`;
+//     return `${col} ${dir}`;
+//   }).filter(Boolean);
+//   return mapped.length ? mapped.join(', ') : DEFAULT;
+// }
+
 function mapSort(sort) {
-  const DEFAULT = `display_order DESC, event_date DESC NULLS LAST, created_at DESC`;
+  const DEFAULT = "display_order ASC, event_date DESC NULLS LAST, created_at DESC";
   if (!sort) return DEFAULT;
-  const allow = new Set(['display_order','event_date','created_at','title']);
-  const parts = String(sort).split(',').map(s => s.trim()).filter(Boolean);
-  const mapped = parts.map(p => {
-    const desc = p.startsWith('-');
-    const col = desc ? p.slice(1) : p;
-    if (!allow.has(col)) return null;
-    const dir = desc ? 'DESC' : 'ASC';
-    if (col === 'event_date') return `event_date ${dir} NULLS LAST`;
-    return `${col} ${dir}`;
+  const s = String(sort).toLowerCase();
+  const mapped = s.split(",").map(x => x.trim()).map(part => {
+    if (part === "date_desc") return "event_date DESC NULLS LAST";
+    if (part === "date_asc") return "event_date ASC NULLS LAST";
+    if (part === "order_asc") return "display_order ASC";
+    if (part === "order_desc") return "display_order DESC";
+    if (part === "new") return "created_at DESC";
+    return null;
   }).filter(Boolean);
-  return mapped.length ? mapped.join(', ') : DEFAULT;
+  return mapped.length ? mapped.join(", ") : DEFAULT;
 }
 
 // ---------------- 목록 ----------------
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const { category, type, q } = req.query;
     const { page, limit, offset } = parsePaging(req.query);
@@ -71,7 +146,7 @@ router.get('/', async (req, res) => {
       wheres.push(`(title ILIKE $${params.length} OR description ILIKE $${params.length})`);
     }
 
-    const whereSql = wheres.length ? `WHERE ${wheres.join(' AND ')}` : '';
+    const whereSql = wheres.length ? `WHERE ${wheres.join(" AND ")}` : "";
 
     const totalQ = await pool.query(`SELECT COUNT(*)::int AS total FROM moe.media ${whereSql}`, params);
     const listQ  = await pool.query(
@@ -90,18 +165,27 @@ router.get('/', async (req, res) => {
       [...params, limit, offset]
     );
 
-    const items = listQ.rows.map(r => ({ ...r, thumbnailUrl: deriveThumb(r) }));
+    const items = listQ.rows.map(r => {
+      const imageUrls = Array.isArray(r.imageUrls) ? r.imageUrls.map(k => toPublicUrl(k, "image")) : r.imageUrls;
+      const mediaUrl  = r.mediaUrl ? toPublicUrl(r.mediaUrl, r.mediaType) : r.mediaUrl;
+
+      const row = { ...r, imageUrls, mediaUrl };
+      return { ...row, thumbnailUrl: deriveThumb(row) };
+    });
+
     res.json({ items, page, limit, total: totalQ.rows[0].total });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok:false, error:'server_error' });
+    res.status(500).json({ ok:false, error:"server_error" });
   }
 });
 
 // ---------------- 단건 ----------------
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const q = await pool.query(
+    const currentId = req.params.id;
+
+    const mainQ = await pool.query(
       `SELECT id, title, description, category,
               event_date AS "eventDate",
               media_type AS "mediaType",
@@ -110,157 +194,157 @@ router.get('/:id', async (req, res) => {
               created_at AS "createdAt",
               updated_at AS "updatedAt",
               display_order AS "displayOrder"
-         FROM moe.media WHERE id = $1`,
-      [req.params.id]
+         FROM moe.media
+        WHERE id = $1`,
+      [currentId]
     );
-    if (!q.rowCount) return res.status(404).json({ ok:false, error:'not_found' });
-    const row = q.rows[0];
-    res.json({ ...row, thumbnailUrl: deriveThumb(row) });
+    if (!mainQ.rows.length) return res.status(404).json({ ok:false, error:"not_found" });
+
+    const base = mainQ.rows[0];
+    const imageUrls = Array.isArray(base.imageUrls) ? base.imageUrls.map(k => toPublicUrl(k, "image")) : base.imageUrls;
+    const mediaUrl  = base.mediaUrl ? toPublicUrl(base.mediaUrl, base.mediaType) : base.mediaUrl;
+
+    const row = { ...base, imageUrls, mediaUrl };
+    res.json({
+      ...row,
+      thumbnailUrl: deriveThumb(row)
+    });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok:false, error:'server_error' });
+    res.status(500).json({ ok:false, error:"server_error" });
   }
 });
 
-// ---------------- 생성 (비보호) ----------------
-// 프론트가 보낼 수 있는 바디(둘 다 허용):
-// { title, category, event_date|eventDate, media_type|mediaType, file_url|fileUrl, youtube_url|youtubeUrl,
-//   image_urls|imageUrls, description, display_order|displayOrder, mime_type, file_size, duration }
-router.post('/', async (req, res) => {
+// ---------------- 생성 ----------------
+router.post("/", async (req, res) => {
   try {
     const body = req.body || {};
-    const title       = body.title;
+    const title = body.title?.trim();
+    const category = body.category?.trim();
+    const mediaType = body.media_type || body.mediaType;
     const description = body.description ?? null;
-    const category    = body.category;
+    const eventDate = body.event_date || body.eventDate || null;
+    const displayOrder = Number.isFinite(Number(body.display_order ?? body.displayOrder))
+      ? Number(body.display_order ?? body.displayOrder) : 0;
 
-    // 두 표기 다 수용
-    const eventDate   = body.event_date ?? body.eventDate ?? null;
-    const mediaType   = body.media_type ?? body.mediaType;
-    const fileUrl     = body.file_url   ?? body.fileUrl   ?? null;
-    const youtubeUrl  = body.youtube_url?? body.youtubeUrl?? null;
-    const displayOrder= body.display_order ?? body.displayOrder ?? 0;
+    if (!title || !category || !mediaType) return res.status(400).json({ ok:false, error:"missing_required" });
 
-    // 이미지 URLs (여러 장)
-    let imageUrls     = body.image_urls ?? body.imageUrls ?? null;
-    imageUrls = imageUrls != null ? toStrArr(imageUrls).slice(0, 10) : null;
+    // 여기부터 핵심: DB에는 key만 저장
+    let imageUrlsIn = body.image_urls ?? body.imageUrls ?? null;
+    let imageKeys = toStrArr(imageUrlsIn).map(extractKey).filter(Boolean);
 
-    if (!required(title) || !required(category) || !required(mediaType)) {
-      return res.status(400).json({ ok:false, error:'missing_required_fields' });
+    const rawMedia = body.media_url ?? body.mediaUrl ?? null;
+    const youtubeUrl = rawMedia ? String(rawMedia) : null;
+    const yid = youtubeUrl ? youtubeIdFromUrl(youtubeUrl) : null;
+
+    let mediaKey = null;
+    if (!yid && rawMedia) {
+      mediaKey = extractKey(rawMedia);
     }
-    if (!['image','video'].includes(mediaType)) {
-      return res.status(400).json({ ok:false, error:'invalid_media_type' });
-    }
 
-    // 정규화:
-    // image: image_urls가 비어있고 file_url이 있으면 image_urls = [file_url]
-    // video: media_url = youtube_url || file_url (둘 중 하나 필수)
-    let mediaUrl = null;
+    let mediaUrlToStore = null;
+    let imageUrlsToStore = null;
 
-    if (mediaType === 'image') {
-      if ((!imageUrls || imageUrls.length === 0) && required(fileUrl)) {
-        imageUrls = [String(fileUrl)];
+    if (mediaType === "image") {
+      // 이미지: image_urls에 key 배열 저장
+      if (imageKeys.length === 0 && rawMedia) {
+        // 혹시 프론트가 media_url로 이미지 하나 보냈다면 그것도 흡수
+        const k = extractKey(rawMedia);
+        if (k) imageKeys = [k];
       }
-      if (!imageUrls || imageUrls.length === 0) {
-        return res.status(400).json({ ok:false, error:'image_urls_required' });
-      }
+      imageUrlsToStore = imageKeys.slice(0, 10);
+    } else if (mediaType === "video") {
+      // 비디오: 유튜브면 URL 저장, 파일이면 key 저장
+      mediaUrlToStore = yid ? youtubeUrl : (mediaKey || null);
     } else {
-      mediaUrl = youtubeUrl || fileUrl || null;
-      if (!required(mediaUrl)) {
-        return res.status(400).json({ ok:false, error:'media_url_required' });
-      }
-      imageUrls = null; // video는 별도 이미지 배열 없음(썸네일은 추후)
+      return res.status(400).json({ ok:false, error:"invalid_media_type" });
     }
 
     const q = await pool.query(
-      `INSERT INTO moe.media
-         (title, description, category, event_date, media_type, media_url, image_urls, display_order)
+      `INSERT INTO moe.media (title, description, category, event_date, media_type, media_url, image_urls, display_order)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
        RETURNING id`,
-      [
-        title,
-        description,
-        category,
-        eventDate || null,
-        mediaType,
-        mediaUrl,
-        imageUrls,
-        Number(displayOrder) || 0
-      ]
+      [title, description, category, eventDate, mediaType, mediaUrlToStore, imageUrlsToStore, displayOrder]
     );
 
-    res.status(201).json({ ok:true, id: q.rows[0].id });
+    res.json({ ok:true, id: q.rows[0].id });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok:false, error:'server_error' });
+    res.status(500).json({ ok:false, error:"server_error" });
   }
 });
 
-// ---------------- 수정 (비보호) ----------------
-router.put('/:id', async (req, res) => {
+// ---------------- 수정 ----------------
+router.patch("/:id", async (req, res) => {
   try {
-    const b = req.body || {};
-
-    const patch = {
-      title:        b.title,
-      description:  b.description,
-      category:     b.category,
-      eventDate:    b.event_date ?? b.eventDate,
-      mediaType:    b.media_type ?? b.mediaType,
-      mediaUrlRaw:  (b.media_url ?? b.mediaUrl ?? b.youtube_url ?? b.youtubeUrl ?? b.file_url ?? b.fileUrl),
-      imageUrlsRaw: b.image_urls ?? b.imageUrls,
-      displayOrder: b.display_order ?? b.displayOrder
-    };
+    const id = req.params.id;
+    const body = req.body || {};
 
     const fields = [];
-    const vals = [];
-    let i = 1;
+    const params = [];
+    const set = (sql, val) => { params.push(val); fields.push(`${sql} = $${params.length}`); };
 
-    if (patch.title !== undefined)       { fields.push(`title = $${i++}`);       vals.push(patch.title); }
-    if (patch.description !== undefined) { fields.push(`description = $${i++}`); vals.push(patch.description || null); }
-    if (patch.category !== undefined)    { fields.push(`category = $${i++}`);    vals.push(patch.category); }
-    if (patch.eventDate !== undefined)   { fields.push(`event_date = $${i++}`);  vals.push(patch.eventDate || null); }
-    if (patch.mediaType !== undefined) {
-      if (!['image','video'].includes(patch.mediaType)) {
-        return res.status(400).json({ ok:false, error:'invalid_media_type' });
-      }
-      fields.push(`media_type = $${i++}`); vals.push(patch.mediaType);
-      // 타입 바뀌면 서로 상충 필드 정리해줘야 하지만, 여기선 클라이언트가 맞게 보내는 전제
-    }
-    if (patch.imageUrlsRaw !== undefined) {
-      const imgs = toStrArr(patch.imageUrlsRaw).slice(0, 10);
-      fields.push(`image_urls = $${i++}`); vals.push(imgs.length ? imgs : null);
-    }
-    if (patch.mediaUrlRaw !== undefined) {
-      fields.push(`media_url = $${i++}`); vals.push(required(patch.mediaUrlRaw) ? String(patch.mediaUrlRaw) : null);
-    }
-    if (patch.displayOrder !== undefined) {
-      fields.push(`display_order = $${i++}`); vals.push(Number(patch.displayOrder) || 0);
+    if (body.title !== undefined) set("title", String(body.title).trim());
+    if (body.description !== undefined) set("description", body.description);
+    if (body.category !== undefined) set("category", String(body.category).trim());
+    if (body.event_date !== undefined || body.eventDate !== undefined) set("event_date", body.event_date ?? body.eventDate);
+    if (body.display_order !== undefined || body.displayOrder !== undefined) set("display_order", Number(body.display_order ?? body.displayOrder) || 0);
+
+    if (body.image_urls !== undefined || body.imageUrls !== undefined) {
+      const keys = toStrArr(body.image_urls ?? body.imageUrls).map(extractKey).filter(Boolean).slice(0, 10);
+      set("image_urls", keys.length ? keys : null);
     }
 
-    // 항상 updated_at 갱신
-    fields.push(`updated_at = now()`);
+    if (body.media_url !== undefined || body.mediaUrl !== undefined) {
+      const raw = body.media_url ?? body.mediaUrl;
+      const yid = raw ? youtubeIdFromUrl(String(raw)) : null;
+      if (yid) set("media_url", String(raw));
+      else set("media_url", raw ? extractKey(raw) : null);
+    }
 
     if (!fields.length) return res.json({ ok:true });
 
-    vals.push(req.params.id);
-    const q = await pool.query(`UPDATE moe.media SET ${fields.join(', ')} WHERE id = $${i}`, vals);
-    if (!q.rowCount) return res.status(404).json({ ok:false, error:'not_found' });
+    params.push(id);
+    await pool.query(`UPDATE moe.media SET ${fields.join(", ")}, updated_at = now() WHERE id = $${params.length}`, params);
+
     res.json({ ok:true });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok:false, error:'server_error' });
+    res.status(500).json({ ok:false, error:"server_error" });
   }
 });
 
-// ---------------- 삭제 (비보호) ----------------
-router.delete('/:id', async (req, res) => {
+// ---------------- 삭제 ----------------
+router.delete("/:id", async (req, res) => {
   try {
-    const q = await pool.query(`DELETE FROM moe.media WHERE id = $1`, [req.params.id]);
-    if (!q.rowCount) return res.status(404).json({ ok:false, error:'not_found' });
+    const id = req.params.id;
+
+    // 삭제 전에 파일 key들을 읽어서 Object Storage 삭제
+    const q = await pool.query(
+      `SELECT media_type, media_url, image_urls
+         FROM moe.media
+        WHERE id = $1`,
+      [id]
+    );
+    if (!q.rows.length) return res.status(404).json({ ok:false, error:"not_found" });
+
+    const row = q.rows[0];
+
+    // image_urls에 key 저장되어 있음
+    if (Array.isArray(row.image_urls)) {
+      for (const k of row.image_urls) await deletePhysicalFile(k);
+    }
+
+    // media_url이 유튜브면 삭제 X, 파일 key면 삭제
+    if (row.media_url && !youtubeIdFromUrl(String(row.media_url))) {
+      await deletePhysicalFile(row.media_url);
+    }
+
+    await pool.query(`DELETE FROM moe.media WHERE id = $1`, [id]);
     res.json({ ok:true });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ ok:false, error:'server_error' });
+    res.status(500).json({ ok:false, error:"server_error" });
   }
 });
 

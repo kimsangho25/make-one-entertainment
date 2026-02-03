@@ -102,7 +102,7 @@ export default function ContactSection() {
 
   return (
     <section id="contact" className="py-20 md:py-32 bg-slate-800">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6">
         {/* 상단 제목 */}
         <div className="text-center mb-20">
           <h2 className="text-6xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight">
@@ -122,7 +122,7 @@ export default function ContactSection() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* 왼쪽 - 연락처 정보 */}
           <div className="lg:col-span-1">
-            <div className="bg-slate-700 rounded-2xl p-10">
+            <div className="bg-slate-700 rounded-2xl p-5">
               <h3 className="text-3xl font-bold text-white mb-12">연락처 정보</h3>
               
               <div className="space-y-10">
