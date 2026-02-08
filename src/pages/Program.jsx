@@ -3,52 +3,52 @@ import React from 'react';
 export default function Program() {
   const programs = [
     {
-      id: 'squid-game',
-      title: '오징어게임',
-      description: '넷플릭스 드라마를 현실로! 팀워크와 전략이 필요한 몰입형 프로그램',
-      image: null // 이미지 추가 예정
-    },
-    {
       id: 'black-white-cook',
       title: '흑백요리사',
       description: '요리 대결을 통한 창의력과 협업 능력 향상',
-      image: null
+      image: '/images/programs/black-white-cook.jpeg'
+    },
+    {
+      id: 'squid-game',
+      title: '오징어게임',
+      description: '넷플릭스 드라마를 현실로! 팀워크와 전략이 필요한 몰입형 프로그램',
+      image: '/images/programs/squid-game.jpeg'
     },
     {
       id: 'money-game',
       title: '돈의게임',
       description: '경제 시뮬레이션 게임으로 의사결정 능력과 팀워크 강화',
-      image: null
+      image: '/images/programs/money-game.jpeg'
     },
     {
       id: 'workshop',
       title: '워크샵',
       description: '팀 빌딩과 업무 효율성 향상을 위한 맞춤형 워크샵',
-      image: null
+      image: '/images/programs/workshop.jpeg'
     },
     {
       id: 'domino',
       title: '도미노',
       description: '협력과 집중력이 필요한 대규모 도미노 프로젝트',
-      image: null
+      image: '/images/programs/domino.jpeg'
     },
     {
       id: 'sports-day',
       title: '체육대회',
       description: '전통과 현대가 어우러진 신나는 체육대회',
-      image: null
+      image: '/images/programs/sports-day.jpeg'
     },
     {
       id: 'new-employee',
       title: '신입사원',
       description: '신입사원 환영 및 조직 적응을 위한 특별 프로그램',
-      image: null
+      image: '/images/programs/new-employee.jpeg'
     },
     {
       id: 'retro-games',
       title: '추억의 게임',
       description: '세대를 아우르는 추억의 게임으로 하나 되는 시간',
-      image: null
+      image: '/images/programs/retro-games.jpeg'
     }
   ];
 
@@ -71,16 +71,13 @@ export default function Program() {
                 key={program.id}
                 className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
               >
-                {/* Image Placeholder */}
-                <div className="h-64 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                  {program.image ? (
-                    <img src={program.image} alt={program.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="text-center p-6">
-                      <div className="text-6xl font-bold text-gray-400 mb-2">{idx + 1}</div>
-                      <div className="text-gray-500 text-sm">이미지 추가 예정</div>
-                    </div>
-                  )}
+                {/* Image */}
+                <div className="h-64 overflow-hidden">
+                  <img 
+                    src={program.image} 
+                    alt={program.title} 
+                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                  />
                 </div>
                 
                 {/* Content */}
