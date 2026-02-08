@@ -55,24 +55,24 @@ export default function Program() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">프로그램</h1>
-          <p className="text-xl text-blue-100">메이크원의 트렌디한 프로그램을 만나보세요</p>
+      <section className="pt-24 md:pt-32 pb-12 md:pb-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4">프로그램</h1>
+          <p className="text-base sm:text-lg md:text-xl text-blue-100">메이크원의 트렌디한 프로그램을 만나보세요</p>
         </div>
       </section>
 
       {/* Programs Grid */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <section className="py-12 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {programs.map((program, idx) => (
               <div
                 key={program.id}
                 className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
               >
                 {/* Image */}
-                <div className="h-64 overflow-hidden bg-gray-100">
+                <div className="h-48 sm:h-56 md:h-64 overflow-hidden bg-gray-100">
                   <img 
                     src={program.image} 
                     alt={program.title} 
@@ -81,8 +81,8 @@ export default function Program() {
                 </div>
                 
                 {/* Content */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{program.title}</h3>
+                <div className="p-4 sm:p-5 md:p-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 md:mb-3">{program.title}</h3>
                   <p className="text-gray-600 text-sm leading-relaxed">{program.description}</p>
                 </div>
               </div>
@@ -92,13 +92,13 @@ export default function Program() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-blue-600 text-white">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h3 className="text-2xl font-bold mb-4">프로그램에 대해 더 알고 싶으신가요?</h3>
-          <p className="mb-8 text-blue-100">상세한 프로그램 소개와 견적을 문의해보세요</p>
+      <section className="py-12 md:py-16 bg-blue-600 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h3 className="text-xl sm:text-2xl font-bold mb-3 md:mb-4">프로그램에 대해 더 알고 싶으신가요?</h3>
+          <p className="mb-6 md:mb-8 text-blue-100 text-sm sm:text-base">상세한 프로그램 소개와 견적을 문의해보세요</p>
           <a
             href="/#contact"
-            className="inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all hover:scale-105 shadow-lg"
+            className="inline-block bg-white text-blue-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-gray-100 transition-all hover:scale-105 shadow-lg text-sm sm:text-base"
           >
             견적 문의하기
           </a>

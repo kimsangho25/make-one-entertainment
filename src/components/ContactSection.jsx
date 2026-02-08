@@ -101,11 +101,11 @@ export default function ContactSection() {
   }
 
   return (
-    <section id="contact" className="py-20 md:py-32 bg-slate-800">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="contact" className="py-12 md:py-20 lg:py-32 bg-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* 상단 제목 */}
-        <div className="text-center mb-20">
-          <h2 className="text-6xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight">
+        <div className="text-center mb-10 md:mb-20">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-4 md:mb-6 leading-tight">
             <span className="animate-pulse-subtle text-orange-400">10초만에</span>
             <br />
             <span className="relative">
@@ -113,57 +113,57 @@ export default function ContactSection() {
               <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-cyan-400 opacity-30 rounded-full"></div>
             </span>
           </h2>
-          <p className="text-gray-400 text-2xl">
+          <p className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl px-2">
             문의를 남겨주시면 빠르고 친절하게 답변 드리겠습니다.
           </p>
         </div>
 
         {/* 메인 콘텐츠 - 2단 레이아웃 */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-12">
           {/* 왼쪽 - 연락처 정보 */}
           <div className="lg:col-span-1">
-            <div className="bg-slate-700 rounded-2xl p-5">
-              <h3 className="text-3xl font-bold text-white mb-12">연락처 정보</h3>
+            <div className="bg-slate-700 rounded-2xl p-6 md:p-8 lg:p-10">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-6 md:mb-12">연락처 정보</h3>
               
-              <div className="space-y-10">
+              <div className="space-y-6 md:space-y-10">
                 {/* 전화번호 */}
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center">
-                    <Phone className="w-7 h-7 text-white" />
+                <div className="flex items-center gap-3 md:gap-6">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-5 h-5 md:w-7 md:h-7 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-400 text-xl">전화번호</p>
-                    <a href="tel:010-8771-8434" className="text-white font-medium hover:text-red-400 transition-colors text-2xl">
+                    <p className="text-gray-400 text-sm md:text-xl">전화번호</p>
+                    <a href="tel:010-8771-8434" className="text-white font-medium hover:text-red-400 transition-colors text-base md:text-xl lg:text-2xl break-all">
                       010-8771-8434
                     </a>
                   </div>
                 </div>
 
                 {/* 이메일 */}
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center">
-                    <Mail className="w-7 h-7 text-white" />
+                <div className="flex items-center gap-3 md:gap-6">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-5 h-5 md:w-7 md:h-7 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-400 text-xl">이메일</p>
-                    <a href="mailto:make1ent@nate.com" className="text-white font-medium hover:text-red-400 transition-colors text-2xl">
+                    <p className="text-gray-400 text-sm md:text-xl">이메일</p>
+                    <a href="mailto:make1ent@nate.com" className="text-white font-medium hover:text-red-400 transition-colors text-base md:text-xl lg:text-2xl break-all">
                       make1ent@nate.com
                     </a>
                   </div>
                 </div>
 
                 {/* 인스타그램 */}
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center">
-                    <Instagram className="w-7 h-7 text-white" />
+                <div className="flex items-center gap-3 md:gap-6">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Instagram className="w-5 h-5 md:w-7 md:h-7 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-400 text-xl">인스타그램</p>
+                    <p className="text-gray-400 text-sm md:text-xl">인스타그램</p>
                     <a 
                       href="https://www.instagram.com/mc_sangseol/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white font-medium hover:text-red-400 transition-colors text-2xl"
+                      className="text-white font-medium hover:text-red-400 transition-colors text-base md:text-xl lg:text-2xl break-all"
                     >
                       @mc_sangseol
                     </a>
@@ -175,84 +175,84 @@ export default function ContactSection() {
 
           {/* 오른쪽 - 입력 폼 */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-10">
+            <form onSubmit={handleSubmit} className="space-y-6 md:space-y-10">
               {/* 첫 번째 행 - 단체명, 담당자명 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div>
-                  <label className="block text-white text-2xl font-medium mb-4">
+                  <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
                     단체명 <span className="text-red-500">*</span>
                   </label>
                   <Input
                     value={formData.company}
                     onChange={(e) => handleChange("company", e.target.value)}
                     required
-                    className="w-full px-8 py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-xl"
+                    className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="단체명을 입력해주세요"
                   />
                 </div>
                 <div>
-                  <label className="block text-white text-2xl font-medium mb-4">
+                  <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
                     담당자명 <span className="text-red-500">*</span>
                   </label>
                   <Input
                     value={formData.contactName}
                     onChange={(e) => handleChange("contactName", e.target.value)}
                     required
-                    className="w-full px-8 py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-xl"
+                    className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="담당자명을 입력해주세요"
                   />
                 </div>
               </div>
 
               {/* 두 번째 행 - 행사명, 연락처 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div>
-                  <label className="block text-white text-2xl font-medium mb-4">
+                  <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
                     행사명 <span className="text-red-500">*</span>
                   </label>
                   <Input
                     value={formData.eventName}
                     onChange={(e) => handleChange("eventName", e.target.value)}
                     required
-                    className="w-full px-8 py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-xl"
+                    className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="행사명을 입력해주세요"
                   />
                 </div>
                 <div>
-                  <label className="block text-white text-2xl font-medium mb-4">
+                  <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
                     연락처 <span className="text-red-500">*</span>
                   </label>
                   <Input
                     value={formData.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
                     required
-                    className="w-full px-8 py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-xl"
+                    className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="연락처를 입력해주세요"
                   />
                 </div>
               </div>
 
               {/* 세 번째 행 - 행사 날짜, 예상 인원 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div>
-                  <label className="block text-white text-2xl font-medium mb-4">
+                  <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
                     행사 날짜
                   </label>
                   <Input
                     type="date"
                     value={formData.eventDate}
                     onChange={(e) => handleChange("eventDate", e.target.value)}
-                    className="w-full px-8 py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-xl"
+                    className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                   />
                 </div>
                 <div>
-                  <label className="block text-white text-2xl font-medium mb-4">
+                  <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
                     예상 인원
                   </label>
                   <Input
                     value={formData.expectedParticipants}
                     onChange={(e) => handleChange("expectedParticipants", e.target.value)}
-                    className="w-full px-8 py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-xl"
+                    className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="예상 인원을 입력해주세요"
                   />
                 </div>
