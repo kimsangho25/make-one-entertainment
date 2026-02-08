@@ -72,11 +72,11 @@ export default function Program() {
                 className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
               >
                 {/* Image */}
-                <div className="h-64 overflow-hidden">
+                <div className="h-64 overflow-hidden bg-gray-100">
                   <img 
                     src={program.image} 
                     alt={program.title} 
-                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                    className="w-full h-full object-contain transition-transform duration-300"
                   />
                 </div>
                 
