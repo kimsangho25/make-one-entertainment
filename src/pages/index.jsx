@@ -14,6 +14,14 @@ import Admin from "./Admin";
 
 import PhotoDetailPage from "./PhotoDetailPage";
 
+import CompanyInfo from "./CompanyInfo";
+
+import Program from "./Program";
+
+import System from "./System";
+
+import Casting from "./Casting";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -31,6 +39,14 @@ const PAGES = {
     Admin: Admin,
 
     PhotoDetailPage: PhotoDetailPage,
+
+    CompanyInfo: CompanyInfo,
+
+    Program: Program,
+
+    System: System,
+
+    Casting: Casting,
     
 }
 
@@ -72,6 +88,14 @@ function PagesContent() {
                 <Route path="/Admin" element={<Admin />} />
 
                 <Route path="/Photos/:id" element={<PhotoDetailPage />} />
+
+                <Route path="/CompanyInfo" element={<CompanyInfo />} />
+
+                <Route path="/Program" element={<Program />} />
+
+                <Route path="/System" element={<System />} />
+
+                <Route path="/Casting" element={<Casting />} />
                 
             </Routes>
         </Layout>
