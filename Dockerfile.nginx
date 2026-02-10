@@ -1,19 +1,39 @@
 # ----- build stage: Vite build -----
-FROM node:20-alpine AS build
-WORKDIR /frontend
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN chmod +x node_modules/.bin/vite && npm run build     # dist/ 생성
+# FROM node:20-alpine AS build
+# WORKDIR /frontend
+# COPY package*.json ./
+# RUN npm ci
+# COPY . .
+# RUN chmod +x node_modules/.bin/vite && npm run build     # dist/ 생성
 
-# ----- runtime: nginx -----
+# # ----- runtime: nginx -----
+# FROM nginx:1.25-alpine
+# # 기본 nginx 설정(로그/워커 등)
+# COPY nginx/nginx.conf /etc/nginx/nginx.conf
+# # 가상호스트 설정(프록시, SSL 등)
+# COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+# # 정적 파일 배치
+# COPY --from=build /frontend/dist /usr/share/nginx/html
+
+# EXPOSE 80 443
+# CMD ["nginx", "-g", "daemon off;"]
+
+
+
+
+# Dockerfile.nginx
 FROM nginx:1.25-alpine
-# 기본 nginx 설정(로그/워커 등)
+
+# 설정 파일 복사
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
-# 가상호스트 설정(프록시, SSL 등)
 COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
-# 정적 파일 배치
-COPY --from=build /frontend/dist /usr/share/nginx/html
+
+# [핵심] 서버에 업로드한 dist 폴더를 nginx 경로로 바로 복사
+COPY dist /usr/share/nginx/html
 
 EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"]
+
+
+
+
