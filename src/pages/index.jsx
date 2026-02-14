@@ -14,6 +14,8 @@ import Admin from "./Admin";
 
 import PhotoDetailPage from "./PhotoDetailPage";
 
+import Program from "./Program";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -31,6 +33,8 @@ const PAGES = {
     Admin: Admin,
 
     PhotoDetailPage: PhotoDetailPage,
+
+    Program: Program,
     
 }
 
@@ -72,6 +76,8 @@ function PagesContent() {
                 <Route path="/Admin" element={<Admin />} />
 
                 <Route path="/Photos/:id" element={<PhotoDetailPage />} />
+
+                <Route path="/Program" element={<Program />} />
                 
             </Routes>
         </Layout>
