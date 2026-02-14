@@ -18,7 +18,7 @@ const programData = {
   },
 
   "축제": {
-    url: "/api/uploads/KakaoTalk_Photo_2025-09-28-15-38-51 001jpeg.jpeg",
+    url: "/images/festival.jpg",
     description: "화려한 조명과 함께하는 감동적인 축제 무대"
   },
 
@@ -38,7 +38,7 @@ const programData = {
   },
 
   "공식행사": {
-    url: "/api/uploads/KakaoTalk_Photo_2025-09-28-15-38-53 002jpeg.jpeg",
+    url: "/images/official.jpg",
     description: "교육부 한국청년기업가정신센터 공식행사 - 전문적이고 품격있는 정부 공식 행사"
   }
 };
@@ -92,7 +92,7 @@ export default function ProgramsSection() {
               <img
                 src={programData[activeTab].url}
                 alt={programData[activeTab].description}
-                className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
+                className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 ease-out"
               />
               
               {/* Base Overlay */}

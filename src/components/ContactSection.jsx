@@ -110,7 +110,7 @@ export default function ContactSection() {
             <br />
             <span className="relative">
               견적 문의하기
-              <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-cyan-400 opacity-30 rounded-full"></div>
+              <div className="absolute bottom-0 left-0 w-full h-1 sm:h-2 bg-gradient-to-r from-orange-400 to-cyan-400 opacity-30 rounded-full"></div>
             </span>
           </h2>
           <p className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl px-2">
