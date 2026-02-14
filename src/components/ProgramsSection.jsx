@@ -92,7 +92,7 @@ export default function ProgramsSection() {
               <img
                 src={programData[activeTab].url}
                 alt={programData[activeTab].description}
-                className="w-full h-full object-contain bg-gray-100 group-hover:scale-110 transition-transform duration-700 ease-out"
+                className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 ease-out"
               />
               
               {/* Base Overlay */}
