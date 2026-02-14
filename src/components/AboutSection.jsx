@@ -38,38 +38,38 @@ export default function AboutSection() {
   ];
 
   return (
-    <section id="about" className="py-20 md:py-32 pb-4 md:pb-6 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-12">
+    <section id="about" className="py-12 sm:py-20 md:py-32 pb-4 md:pb-6 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-8 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 sm:mb-12">
             이런 고민, 혹시 있으신가요?
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-12 max-w-7xl mx-auto">
             {concerns.map((concern, index) => (
               <div 
                 key={index} 
-                className={`concern-card bg-white rounded-3xl p-16 shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 ${
+                className={`concern-card bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-12 md:p-16 shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 ${
                   isVisible ? 'animate-slide-up-fade-in' : 'opacity-0 translate-y-8'
                 }`}
                 style={{ 
                   animationDelay: `${index * 0.2}s`,
                   animationFillMode: 'forwards',
-                  minHeight: '400px'
+                  minHeight: '300px'
                 }}
               >
                 {/* 아이콘 */}
-                <div className={`w-28 h-28 ${concern.iconBgColor} rounded-3xl flex items-center justify-center mx-auto mb-10 transition-transform duration-300 hover:scale-110`}>
-                  <concern.icon className={`w-14 h-14 ${concern.iconColor} transition-transform duration-300 hover:rotate-12`} />
+                <div className={`w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 ${concern.iconBgColor} rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-10 transition-transform duration-300 hover:scale-110`}>
+                  <concern.icon className={`w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 ${concern.iconColor} transition-transform duration-300 hover:rotate-12`} />
                 </div>
                 
                 {/* 제목 */}
-                <h3 className="text-3xl font-bold text-gray-900 mb-8">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 sm:mb-8">
                   {concern.title}
                 </h3>
                 
                 {/* 설명 */}
-                <p className="text-gray-600 leading-relaxed text-xl">
+                <p className="text-gray-600 leading-relaxed text-sm sm:text-base md:text-xl">
                   {concern.description.split('\n').map((line, lineIndex) => (
                     <React.Fragment key={lineIndex}>
                       {line}
