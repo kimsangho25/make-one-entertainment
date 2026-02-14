@@ -73,7 +73,7 @@ export default function ProjectsSection() {
           <div className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-4">
             {/* PORTFOLIO 텍스트 삭제됨 */}
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-8 whitespace-nowrap">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-8">
             MaKe One 하이라이트 영상
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">

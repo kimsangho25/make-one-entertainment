@@ -18,7 +18,7 @@ const programData = {
   },
 
   "축제": {
-    url: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ad8266d3f7a3e6710e5720/festival.jpg",
+    url: "/images/festival.jpg",
     description: "화려한 조명과 함께하는 감동적인 축제 무대"
   },
 
@@ -38,7 +38,7 @@ const programData = {
   },
 
   "공식행사": {
-    url: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68ad8266d3f7a3e6710e5720/official.jpg",
+    url: "/images/official.jpg",
     description: "교육부 한국청년기업가정신센터 공식행사 - 전문적이고 품격있는 정부 공식 행사"
   }
 };
@@ -92,7 +92,7 @@ export default function ProgramsSection() {
               <img
                 src={programData[activeTab].url}
                 alt={programData[activeTab].description}
-                className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
+                className="w-full h-full object-contain bg-gray-100 group-hover:scale-110 transition-transform duration-700 ease-out"
               />
               
               {/* Base Overlay */}
