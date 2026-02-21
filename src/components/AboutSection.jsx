@@ -19,14 +19,14 @@ export default function AboutSection() {
       iconColor: "text-orange-500",
       iconBgColor: "bg-orange-50",
       title: "#소외되는 팀원들",
-      description: "직원들 간의 소통이 부족하고 팀워크가 형성되지 않아 \n 업무 효율성이 떨어진다"
+      description: "직원들 간의 소통이 부족하고\n팀워크가 형성되지 않아\n업무 효율성이 떨어진다."
     },
     {
       icon: Calendar,
       iconColor: "text-orange-500",
       iconBgColor: "bg-orange-50",
       title: "#뻔한 행사 기획",
-      description: "매번 비슷한 행사로 지겨움과 참여도가 낮고 새로운 \n 아이디어가 부족하다"
+      description: "매번 비슷한 행사로\n지겨움과 참여도가 낮고\n아이디어가 부족하다"
     },
     {
       icon: Clock,

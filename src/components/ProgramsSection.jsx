@@ -60,7 +60,10 @@ export default function ProgramsSection() {
           <div className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-4">
             OUR PROGRAMS
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-8">우린 함께일 때 더 특별해집니다.</h2>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-8">
+            우린 함께일 때<br className="md:hidden" />
+            더 특별해집니다.
+          </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">메이크원은 모두를 하나로 만드는 트렌디한 프로그램을 제공합니다.</p>
         </div>
 
