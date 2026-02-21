@@ -30,11 +30,11 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-blue-400" />
-                <span>010-8771-8494</span>
+                <span>010-8771-8434</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-blue-400" />
-                <span className="">서울 강서구 방화대로 48길 40 213동 1506호 </span>
+                <span className="">서울 강서구 금낭화로 49-3 1층 상가</span>
               </div>
             </div>
           </div>

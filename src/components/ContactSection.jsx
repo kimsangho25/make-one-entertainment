@@ -114,7 +114,7 @@ export default function ContactSection() {
             </span>
           </h2>
           <p className="text-gray-400 text-base sm:text-lg md:text-xl lg:text-2xl px-2">
-            문의를 남겨주시면 빠르고 친절하게 답변 드리겠습니다.
+            문의 남겨주시면 친절하게 답변드리겠습니다.
           </p>
         </div>
 

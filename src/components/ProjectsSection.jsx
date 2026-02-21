@@ -6,22 +6,22 @@ export default function ProjectsSection() {
   const videos = [
     {
       id: 1,
-      title: "전국 TOP 10 가요쇼 사전MC 하이라이트 소개영상",
+      title: "전국 TOP 10 가요쇼 소개영상",
       embedUrl: "https://www.youtube.com/embed/mDkiAmACZIw",
       date: "2024.01.15",
       participants: "1000+",
       location: "전국 방송",
-      description: "전국 TOP 10 가요쇼 사전MC 하이라이트 소개영상",
+      description: "전국 TOP 10 가요쇼 소개영상",
       category: "가요쇼"
     },
     {
       id: 2,
-      title: "기업행사, 워크샵, 체육대회 하이라이트 영상 모음집",
+      title: "기업행사, 워크샵, 체육대회 모음집",
       embedUrl: "https://www.youtube.com/embed/PdmrTMWodHU",
       date: "2024.02.20",
       participants: "500+",
       location: "다양한 기업",
-      description: "기업행사, 워크샵, 체육대회 하이라이트 영상 모음집",
+      description: "기업행사, 워크샵, 체육대회 모음집",
       category: "기업행사"
     },
     {
@@ -36,22 +36,22 @@ export default function ProjectsSection() {
     },
     {
       id: 4,
-      title: "영어진행 오징어게임 프로그램 및 레크레이션 영상",
+      title: "영어진행 오징어게임 및 레크레이션",
       embedUrl: "https://www.youtube.com/embed/_p9dCf9XXjg",
       date: "2024.04.05",
       participants: "200+",
       location: "영어캠프",
-      description: "영어진행 오징어게임 프로그램 및 레크레이션 영상",
+      description: "영어진행 오징어게임 및 레크레이션",
       category: "영어프로그램"
     },
     {
       id: 5,
-      title: "청소년 레크레이션&축제&체육대회 진행 하이라이트",
+      title: "축제&체육대회 진행 하이라이트",
       embedUrl: "https://www.youtube.com/embed/-U0qvsXEhGE",
       date: "2024.05.12",
       participants: "400+",
       location: "청소년센터",
-      description: "청소년 레크레이션&축제&체육대회 진행 하이라이트",
+      description: "축제&체육대회 진행 하이라이트",
       category: "청소년행사"
     },
     {
@@ -74,7 +74,7 @@ export default function ProjectsSection() {
             {/* PORTFOLIO 텍스트 삭제됨 */}
           </div>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-8">
-            MaKe One 하이라이트 영상
+            하이라이트 영상
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             행사의 생생한 감동을 지금 만나보세요.
