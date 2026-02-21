@@ -176,43 +176,15 @@ export default function ContactSection() {
           {/* 오른쪽 - 입력 폼 */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-6 md:space-y-10">
-              {/* 첫 번째 행 - 단체명, 담당자명 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-                <div>
-                  <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
-                    단체명 <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    value={formData.company}
-                    onChange={(e) => handleChange("company", e.target.value)}
-                    required
-                    className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
-                    placeholder="단체명을 입력해주세요"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
-                    담당자명 <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    value={formData.contactName}
-                    onChange={(e) => handleChange("contactName", e.target.value)}
-                    required
-                    className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
-                    placeholder="담당자명을 입력해주세요"
-                  />
-                </div>
-              </div>
-
-              {/* 두 번째 행 - 행사명, 연락처 */}
+              {/* 첫 번째 행 - 행사명, 연락처 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div>
                   <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
                     행사명 <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    value={formData.eventName}
-                    onChange={(e) => handleChange("eventName", e.target.value)}
+                    value={formData.company}
+                    onChange={(e) => handleChange("company", e.target.value)}
                     required
                     className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="행사명을 입력해주세요"
@@ -223,8 +195,8 @@ export default function ContactSection() {
                     연락처 <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    value={formData.phone}
-                    onChange={(e) => handleChange("phone", e.target.value)}
+                    value={formData.contactName}
+                    onChange={(e) => handleChange("contactName", e.target.value)}
                     required
                     className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="연락처를 입력해주세요"
@@ -232,49 +204,51 @@ export default function ContactSection() {
                 </div>
               </div>
 
-              {/* 세 번째 행 - 행사 날짜, 예상 인원 */}
+              {/* 두 번째 행 - 위치, 예산 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 <div>
                   <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
-                    행사 날짜
+                    위치 <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    type="date"
-                    value={formData.eventDate}
-                    onChange={(e) => handleChange("eventDate", e.target.value)}
+                    value={formData.eventName}
+                    onChange={(e) => handleChange("eventName", e.target.value)}
+                    required
                     className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
+                    placeholder="위치를 입력해주세요"
                   />
                 </div>
                 <div>
                   <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
-                    예상 인원
+                    예산 <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    value={formData.expectedParticipants}
-                    onChange={(e) => handleChange("expectedParticipants", e.target.value)}
+                    value={formData.phone}
+                    onChange={(e) => handleChange("phone", e.target.value)}
+                    required
                     className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
-                    placeholder="예상 인원을 입력해주세요"
+                    placeholder="예산을 입력해주세요"
                   />
                 </div>
               </div>
 
-              {/* 예산 범위 */}
+              {/* 세 번째 행 - 행사 날짜 */}
               <div>
-                <label className="block text-white text-2xl font-medium mb-4">
-                  예산 범위
+                <label className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl font-medium mb-2 md:mb-4">
+                  행사 날짜
                 </label>
                 <Input
-                  value={formData.budgetRange}
-                  onChange={(e) => handleChange("budgetRange", e.target.value)}
-                  className="w-full px-8 py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-xl"
-                  placeholder="예산 범위를 선택해주세요"
+                  type="date"
+                  value={formData.eventDate}
+                  onChange={(e) => handleChange("eventDate", e.target.value)}
+                  className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                 />
               </div>
 
-              {/* 요청사항 */}
+              {/* 문의내용 */}
               <div>
                 <label className="block text-white text-2xl font-medium mb-4">
-                  요청사항
+                  문의내용
                 </label>
                 <Textarea
                   value={formData.requirements}
