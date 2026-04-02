@@ -25,8 +25,8 @@ export default function Program() {
       slides: [
         { src: '/images/programs/squid-slide1.webp', caption: '01. 둥글게 둥글게 - 미션 숫자만큼 그룹을 만들고 지정된 장소로 이동' },
         { src: '/images/programs/squid-slide2.webp', caption: '02. 무궁화 꽃이 피었습니다 ver 2 - 3라운드 업그레이드 버전' },
-        { src: '/images/programs/squid-slide3.webp', caption: '03. 개인전 5개의 존 - 딱지치기, 공기놀이, 비석치기, 팽이돌리기, 제기차기' },
-        { src: '/images/programs/squid-slide4.webp', caption: '04. 팀 대항 근대 5종 ver 2 - 5인 6각 근대 5종, 가장 빠르게 성공한 팀 승리' },
+        { src: '/images/programs/squid-slide3.webp', caption: '03. 개인전 5개의 존에서 자유 경쟁 - 딱지치기, 공기놀이, 비석치기, 팽이돌리기, 제기차기' },
+        { src: '/images/programs/squid-slide4.webp', caption: '04. 팀 대항 근대 5종 ver 2 - 5인 6각 근대 5종, 가장 빠르게 성공한 팀 승리 코인 증정' },
       ]
     },
     {
