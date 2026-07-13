@@ -16,9 +16,11 @@ export default function Program() {
       description: '요리 대결을 통한 창의력과 협업 능력 향상',
       image: '/images/programs/black-white-cook.jpeg',
       slides: [
-        { caption: '01. 프로그램 소개 및 팀 구성' },
-        { caption: '02. 팀 대항 요리 대결 진행' },
-        { caption: '03. 심사 및 시상' },
+        { image: '/images/programs/bwcook-slide1.png', caption: '01. 1라운드 — 팀전 요리 골든벨' },
+        { image: '/images/programs/bwcook-slide2.png', caption: '02. 1라운드 — 과자의 달인' },
+        { image: '/images/programs/bwcook-slide3.png', caption: '03. 1라운드 — 커피 음료 문제' },
+        { image: '/images/programs/bwcook-slide4.png', caption: '04. 2라운드 — 블라인드 마스터' },
+        { image: '/images/programs/bwcook-slide5.png', caption: '05. 3라운드 — 라면 장인 데스매치' },
       ]
     },
     {
@@ -27,10 +29,14 @@ export default function Program() {
       description: '넷플릭스 드라마를 현실로! 팀워크와 전략이 필요한 몰입형 프로그램',
       image: '/images/programs/squid-game.jpeg',
       slides: [
-        { caption: '01. 둥글게 둥글게 - 미션 숫자만큼 그룹을 만들고 지정된 장소로 이동' },
-        { caption: '02. 무궁화 꽃이 피었습니다 ver 2 - 3라운드 업그레이드 버전' },
-        { caption: '03. 개인전 5개의 존에서 자유 경쟁 - 딱지치기, 공기놀이, 비석치기, 팽이돌리기, 제기차기' },
-        { caption: '04. 팀 대항 근대 5종 ver 2 - 5인 6각 근대 5종, 가장 빠르게 성공한 팀 승리 코인 증정' },
+        { image: '/images/programs/squid-slide1.png', caption: '01. 프로그램 세팅 — 개인전과 팀 대항전' },
+        { image: '/images/programs/squid-slide2.png', caption: '02. 전체 프로그램 일정' },
+        { image: '/images/programs/squid-slide3.png', caption: '03. 오징어게임 프로그램 구성' },
+        { image: '/images/programs/squid-slide4.png', caption: '04. 1라운드 — 둥글게 둥글게' },
+        { image: '/images/programs/squid-slide5.png', caption: '05. 2라운드 — 무궁화 꽃이 피었습니다' },
+        { image: '/images/programs/squid-slide6.png', caption: '06. 3라운드 — 개인전 5개 존 자유 경쟁' },
+        { image: '/images/programs/squid-slide7.png', caption: '07. 4라운드 — 팀 대항 근대 5종' },
+        { image: '/images/programs/squid-slide8.png', caption: '08. 파이널 라운드 — 시상식' },
       ]
     },
     {
@@ -77,9 +83,12 @@ export default function Program() {
       description: '전통과 현대가 어우러진 신나는 체육대회',
       image: '/images/programs/sports-day.jpeg',
       slides: [
-        { caption: '01. 팀별 활동 종목 소개' },
-        { caption: '02. 장비 및 세팅 제안' },
-        { caption: '03. 시상 및 마무리' },
+        { image: '/images/programs/sports-slide1.png', caption: '01. 행사 운영 구조 및 전문 인력' },
+        { image: '/images/programs/sports-slide2.png', caption: '02. 체육대회 행사 개요' },
+        { image: '/images/programs/sports-slide3.png', caption: '03. 아이스브레이킹 및 소규모 종목' },
+        { image: '/images/programs/sports-slide4.png', caption: '04. 대규모 단합 프로그램' },
+        { image: '/images/programs/sports-slide5.png', caption: '05. 장비·무대·시스템 제안' },
+        { image: '/images/programs/sports-slide6.png', caption: '06. 실제 체육대회 고객 후기' },
       ]
     },
     {
@@ -88,9 +97,13 @@ export default function Program() {
       description: '신입사원 환영 및 조직 적응을 위한 특별 프로그램',
       image: '/images/programs/new-employee.jpeg',
       slides: [
-        { caption: '01. 아이스브레이킹 - 첫 만남을 자연스럽게' },
-        { caption: '02. 단체 포즈 챌린지 - 팀별 창의적인 포즈 경쟁' },
-        { caption: '03. 친구 만들기 클로징 - 새로운 인연을 맺는 마무리' },
+        { image: '/images/programs/freshmen-slide1.png', caption: '01. 신입생 프로그램 행사 목적' },
+        { image: '/images/programs/freshmen-slide2.png', caption: '02. 신입생이 겪는 현실적인 어려움' },
+        { image: '/images/programs/freshmen-slide3.png', caption: '03. 행사 장소 구성 예시' },
+        { image: '/images/programs/freshmen-slide4.png', caption: '04. 프로그램 일정 — 1부' },
+        { image: '/images/programs/freshmen-slide5.png', caption: '05. 프로그램 일정 — 2부' },
+        { image: '/images/programs/freshmen-slide6.png', caption: '06. 팀 소통 빙고판 만들기' },
+        { image: '/images/programs/freshmen-slide7.png', caption: '07. 노래퀴즈 및 영화 명장면' },
       ]
     },
     {
@@ -99,9 +112,12 @@ export default function Program() {
       description: '세대를 아우르는 추억의 게임으로 하나 되는 시간',
       image: '/images/programs/retro-games.jpeg',
       slides: [
-        { caption: '01. 달고나 만들기 & 전통 놀이 체험' },
-        { caption: '02. 레트로 패션쇼 - 추억의 교복 & 복고 패션' },
-        { caption: '03. 추억의 분식 가게 - 레트로 간식 즐기기' },
+        { image: '/images/programs/retro-slide1.png', caption: '01. 추억의 게임 전체 시간표' },
+        { image: '/images/programs/retro-slide2.png', caption: '02. 전통게임 미션 — 추억 속으로' },
+        { image: '/images/programs/retro-slide3.png', caption: '03. 추억의 패션쇼 — 내가 바로 패션왕' },
+        { image: '/images/programs/retro-slide4.png', caption: '04. 레트로 매장 — 옛날 간식과 상품' },
+        { image: '/images/programs/retro-slide5.png', caption: '05. 레트로 레크리에이션' },
+        { image: '/images/programs/retro-slide6.png', caption: '06. 노래 신청곡 — 내가 바로 가수왕' },
       ]
     },
   ];
