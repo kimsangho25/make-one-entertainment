@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export default function CompanyInfo() {
   const location = useLocation();
@@ -17,7 +19,9 @@ export default function CompanyInfo() {
   }, [location]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <>
+      <Header />
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white relative overflow-hidden">
         {/* 배경 장식 */}
@@ -91,6 +95,8 @@ export default function CompanyInfo() {
           </a>
         </div>
       </section>
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }

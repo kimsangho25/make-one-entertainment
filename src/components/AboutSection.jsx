@@ -1,127 +1,367 @@
-import React, { useEffect, useState } from "react";
-import { Users, Calendar, Clock } from "lucide-react";
+import React, { useCallback, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BadgeCheck,
+  CalendarCheck,
+  Handshake,
+  MessagesSquare,
+} from "lucide-react";
+
+const reviewCards = [
+  {
+    id: 1,
+    image: "/images/reviews/review-01.png",
+    alt: "기업 행사 고객 리뷰",
+    background: "#aec5d6",
+    width: 1335,
+    height: 1178,
+    fit: "width",
+  },
+  {
+    id: 2,
+    image: "/images/reviews/review-02.png",
+    alt: "팀빌딩 행사 고객 리뷰",
+    background: "#aec5d6",
+    width: 1032,
+    height: 1524,
+    fit: "width",
+  },
+  {
+    id: 3,
+    image: "/images/reviews/review-03.jpg",
+    alt: "체육대회 고객 리뷰",
+    background: "#aec5d6",
+    width: 1080,
+    height: 1564,
+    fit: "width",
+  },
+  {
+    id: 4,
+    image: "/images/reviews/review-04.jpg",
+    alt: "돌잔치 행사 고객 리뷰",
+    background: "#f7f7f7",
+    width: 1080,
+    height: 2340,
+    fit: "height",
+  },
+  {
+    id: 5,
+    image: "/images/reviews/review-05.png",
+    alt: "기업 행사 고객 리뷰",
+    background: "#f7f7f7",
+    width: 852,
+    height: 1846,
+    fit: "height",
+  },
+  {
+    id: 6,
+    image: "/images/reviews/review-06.png",
+    alt: "연말 행사 고객 리뷰",
+    background: "#abc3d4",
+    width: 852,
+    height: 1846,
+    fit: "height",
+  },
+  {
+    id: 7,
+    image: "/images/reviews/review-07.png",
+    alt: "기업 행사 고객 리뷰",
+    background: "#abc3d4",
+    width: 852,
+    height: 1846,
+    fit: "height",
+  },
+  {
+    id: 8,
+    image: "/images/reviews/review-08.png",
+    alt: "세무법인 행사 고객 리뷰",
+    background: "#f7f7f7",
+    width: 853,
+    height: 1844,
+    fit: "height",
+  },
+];
+
+const reviewBenefits = [
+  { icon: Handshake, label: "신뢰할 수 있는", value: "진짜 현장 후기" },
+  { icon: CalendarCheck, label: "행사가 끝난 뒤", value: "고객이 남긴 기록" },
+  { icon: MessagesSquare, label: "문장 하나까지", value: "솔직한 리뷰" },
+];
 
 export default function AboutSection() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const pointerStart = useRef(null);
+  const wheelLocked = useRef(false);
 
-  useEffect(() => {
-    // 페이지 로딩 후 애니메이션 시작
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 100);
-
-    return () => clearTimeout(timer);
+  const goToReview = useCallback((index) => {
+    setActiveIndex(Math.max(0, Math.min(reviewCards.length - 1, index)));
   }, []);
 
-  const concerns = [
-    {
-      icon: Users,
-      iconColor: "text-orange-500",
-      iconBgColor: "bg-orange-50",
-      title: "#소외되는 팀원들",
-      description: "직원들 간의 소통이 부족하고\n팀워크가 형성되지 않아\n업무 효율성이 떨어진다."
-    },
-    {
-      icon: Calendar,
-      iconColor: "text-orange-500",
-      iconBgColor: "bg-orange-50",
-      title: "#뻔한 행사 기획",
-      description: "매번 비슷한 행사로\n지겨움과 참여도가 낮고\n아이디어가 부족하다"
-    },
-    {
-      icon: Clock,
-      iconColor: "text-yellow-500",
-      iconBgColor: "bg-yellow-50",
-      title: "#시간과 비용 부담",
-      description: "행사 준비에 많은 시간과 \n 비용이 들어가서 만족스런 \n 결과를 얻기 어렵다"
-    }
-  ];
+  const handlePointerDown = (event) => {
+    pointerStart.current = event.clientX;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const handlePointerUp = (event) => {
+    if (pointerStart.current === null) return;
+    const distance = event.clientX - pointerStart.current;
+    pointerStart.current = null;
+
+    if (distance < -45) goToReview(activeIndex + 1);
+    if (distance > 45) goToReview(activeIndex - 1);
+  };
+
+  const handleWheel = (event) => {
+    if (wheelLocked.current || Math.abs(event.deltaX) < 20) return;
+    wheelLocked.current = true;
+    goToReview(activeIndex + (event.deltaX > 0 ? 1 : -1));
+    window.setTimeout(() => {
+      wheelLocked.current = false;
+    }, 450);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "ArrowRight") goToReview(activeIndex + 1);
+    if (event.key === "ArrowLeft") goToReview(activeIndex - 1);
+  };
 
   return (
-    <section id="about" className="py-12 md:py-20 lg:py-32 pb-4 md:pb-6 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-8 md:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 md:mb-12 px-2">
-            이런 고민, 혹시 있으신가요?
+    <section id="about" className="overflow-hidden bg-[#f4f9ff] py-16 md:py-20 lg:py-24">
+      <div className="review-layout mx-auto max-w-[1440px] items-center px-5 sm:px-8 xl:px-12">
+        <div className="review-copy relative z-40 text-center">
+          <BadgeCheck className="mx-auto mb-5 h-6 w-6 fill-blue-600 text-white lg:mx-0" aria-hidden="true" />
+          <p className="text-sm font-bold tracking-[0.12em] text-blue-600">REAL CUSTOMER REVIEW</p>
+          <h2 className="mt-4 text-3xl font-extrabold leading-[1.22] tracking-[-0.04em] text-slate-950 sm:text-4xl lg:text-[2.7rem] xl:text-5xl">
+            한 번 함께해보면,
+            <span className="mt-1 block text-blue-600">다음 행사도 메이크원입니다.</span>
           </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 max-w-7xl mx-auto">
-            {concerns.map((concern, index) => (
-              <div 
-                key={index} 
-                className={`concern-card bg-white rounded-2xl md:rounded-3xl p-8 md:p-12 lg:p-16 shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 ${
-                  isVisible ? 'animate-slide-up-fade-in' : 'opacity-0 translate-y-8'
-                }`}
-                style={{ 
-                  animationDelay: `${index * 0.2}s`,
-                  animationFillMode: 'forwards',
-                  minHeight: 'auto'
-                }}
-              >
-                {/* 아이콘 */}
-                <div className={`w-16 h-16 md:w-20 md:h-20 lg:w-28 lg:h-28 ${concern.iconBgColor} rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-6 md:mb-10 transition-transform duration-300 hover:scale-110`}>
-                  <concern.icon className={`w-8 h-8 md:w-10 md:h-10 lg:w-14 lg:h-14 ${concern.iconColor} transition-transform duration-300 hover:rotate-12`} />
+          <p className="mx-auto mt-6 max-w-md text-base leading-7 text-slate-600 lg:mx-0 lg:text-lg">
+            ‘한 번’은 우연일 수 있지만,<br className="hidden sm:block" />
+            ‘계속 함께하는’ 이유는 후기 속에 있습니다.
+          </p>
+
+          <div className="review-benefits mt-9 grid grid-cols-3 gap-3">
+            {reviewBenefits.map((benefit) => (
+              <div key={benefit.value} className="text-center lg:text-left">
+                <div className="benefit-icon mx-auto mb-3 flex items-center justify-center rounded-full bg-white text-blue-600 shadow-[0_8px_24px_rgba(37,99,235,0.12)] ring-1 ring-blue-100">
+                  <benefit.icon className="h-5 w-5" aria-hidden="true" />
                 </div>
-                
-                {/* 제목 */}
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-8">
-                  {concern.title}
-                </h3>
-                
-                {/* 설명 */}
-                <p className="text-gray-600 leading-relaxed text-base sm:text-lg md:text-xl">
-                  {concern.description.split('\n').map((line, lineIndex) => (
-                    <React.Fragment key={lineIndex}>
-                      {line}
-                      {lineIndex < concern.description.split('\n').length - 1 && <br />}
-                    </React.Fragment>
-                  ))}
-                </p>
+                <p className="hidden text-[11px] leading-4 text-slate-500 sm:block">{benefit.label}</p>
+                <p className="mt-1 text-xs font-bold leading-5 text-slate-800 sm:text-sm">{benefit.value}</p>
               </div>
             ))}
           </div>
         </div>
+
+        <div className="relative min-w-0">
+          <div
+            className="review-stage relative mx-auto w-full max-w-[940px] touch-pan-y select-none outline-none"
+            role="region"
+            aria-label="고객 리뷰 슬라이드"
+            tabIndex={0}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={() => { pointerStart.current = null; }}
+            onWheel={handleWheel}
+            onKeyDown={handleKeyDown}
+          >
+            {reviewCards.map((review, index) => {
+              const offset = index - activeIndex;
+              const isActive = offset === 0;
+              const isVisible = Math.abs(offset) <= 2;
+
+              return (
+                <button
+                  key={review.id}
+                  type="button"
+                  onClick={() => goToReview(index)}
+                  className={`review-device absolute left-1/2 top-5 overflow-hidden rounded-[2rem] border bg-[#dcebf5] p-2.5 text-left shadow-[0_24px_70px_rgba(51,94,133,0.22)] transition-[transform,opacity,filter] duration-500 ease-out sm:p-3 ${
+                    isActive ? "border-white" : "border-blue-100"
+                  }`}
+                  style={{
+                    transform: `translateX(calc(-50% + ${offset * 76}%)) scale(${isActive ? 1 : 0.8})`,
+                    opacity: isVisible ? (isActive ? 1 : Math.abs(offset) === 1 ? 0.72 : 0) : 0,
+                    filter: isActive ? "none" : "saturate(.72)",
+                    pointerEvents: Math.abs(offset) <= 1 ? "auto" : "none",
+                    zIndex: 30 - Math.abs(offset),
+                  }}
+                  aria-label={`${review.alt} 보기, ${index + 1} / ${reviewCards.length}`}
+                  aria-current={isActive ? "true" : undefined}
+                >
+                  <div className="flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-white ring-1 ring-slate-200/80">
+                    <div className="flex h-12 shrink-0 items-center justify-between border-b border-slate-100 px-5 text-slate-700">
+                      <span className="text-[11px] font-extrabold tracking-[0.18em] text-blue-600">MAKE ONE</span>
+                      <span className="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold text-blue-700">
+                        REVIEW {String(review.id).padStart(2, "0")}
+                      </span>
+                    </div>
+
+                    <div
+                      className="flex min-h-0 flex-1 items-center justify-center overflow-hidden"
+                      style={{ backgroundColor: review.background }}
+                    >
+                      <div
+                        className="review-image-shell relative max-h-full max-w-full overflow-hidden"
+                        data-fit={review.fit}
+                        style={{ aspectRatio: `${review.width} / ${review.height}` }}
+                      >
+                        <img
+                          src={review.image}
+                          alt={review.alt}
+                          className="block h-full w-full object-contain"
+                          draggable="false"
+                          loading={index === 0 ? "eager" : "lazy"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+
+            <button
+              type="button"
+              onClick={() => goToReview(activeIndex - 1)}
+              disabled={activeIndex === 0}
+              className="absolute left-0 top-1/2 z-40 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-blue-100 bg-white text-slate-800 shadow-lg transition hover:text-blue-600 disabled:pointer-events-none disabled:opacity-25 sm:flex lg:left-2"
+              aria-label="이전 리뷰"
+            >
+              <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => goToReview(activeIndex + 1)}
+              disabled={activeIndex === reviewCards.length - 1}
+              className="absolute right-0 top-1/2 z-40 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-blue-100 bg-white text-slate-800 shadow-lg transition hover:text-blue-600 disabled:pointer-events-none disabled:opacity-25 sm:flex lg:right-2"
+              aria-label="다음 리뷰"
+            >
+              <ArrowRight className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
+
+          <div className="relative z-40 -mt-1 flex items-center justify-center gap-2" aria-label="리뷰 페이지 선택">
+            {reviewCards.map((review, index) => (
+              <button
+                key={review.id}
+                type="button"
+                onClick={() => goToReview(index)}
+                className={`h-2.5 rounded-full transition-all duration-300 ${
+                  activeIndex === index ? "w-8 bg-blue-600" : "w-2.5 bg-blue-200 hover:bg-blue-300"
+                }`}
+                aria-label={`${index + 1}번 리뷰로 이동`}
+                aria-current={activeIndex === index ? "true" : undefined}
+              />
+            ))}
+          </div>
+          <p className="relative z-40 mt-4 text-center text-xs font-semibold tracking-[0.14em] text-slate-400">
+            SWIPE <span className="mx-2 text-blue-300">•</span>
+            {String(activeIndex + 1).padStart(2, "0")} / {String(reviewCards.length).padStart(2, "0")}
+          </p>
+        </div>
       </div>
 
-      <style jsx>{`
-        .concern-card {
-          opacity: 0;
-          transform: translateY(40px);
+      <style>{`
+        .review-device {
+          width: min(79vw, 440px);
+          height: 590px;
         }
 
-        @keyframes slideUpFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(40px);
+        .review-layout {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: 2.5rem;
+        }
+
+        .review-stage {
+          height: 610px;
+        }
+
+        .review-benefits {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .benefit-icon {
+          width: 44px;
+          height: 44px;
+        }
+
+        .review-image-shell {
+          flex: 0 0 auto;
+        }
+
+        .review-image-shell[data-fit="width"] {
+          width: 100%;
+          height: auto;
+        }
+
+        .review-image-shell[data-fit="height"] {
+          width: auto;
+          height: 100%;
+        }
+
+        @media (min-width: 640px) {
+          .review-device {
+            height: 650px;
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+
+          .review-stage {
+            height: 670px;
           }
         }
 
-        .animate-slide-up-fade-in {
-          animation: slideUpFadeIn 0.8s ease-out forwards;
+        @media (min-width: 1024px) {
+          .review-layout {
+            grid-template-columns: 380px minmax(0, 1fr);
+            gap: 2rem;
+          }
+
+          .review-copy {
+            text-align: left;
+          }
+
+          .review-copy > svg,
+          .review-copy > p,
+          .review-copy > h2 {
+            margin-left: 0;
+            margin-right: 0;
+          }
+
+          .review-benefits {
+            margin-top: 3rem;
+            gap: 1rem;
+          }
+
+          .review-benefits > div,
+          .review-benefits > div > div {
+            text-align: left;
+          }
+
+          .benefit-icon {
+            margin-left: 0;
+            margin-right: 0;
+          }
+
+          .review-device {
+            height: 690px;
+          }
+
+          .review-stage {
+            height: 720px;
+          }
         }
 
-        /* 첫 번째 박스: 0.2초 후 시작 */
-        .concern-card:nth-child(1).animate-slide-up-fade-in {
-          animation-delay: 0.2s;
+        @media (min-width: 1280px) {
+          .review-layout {
+            grid-template-columns: 430px minmax(0, 1fr);
+          }
         }
 
-        /* 두 번째 박스: 0.4초 후 시작 */
-        .concern-card:nth-child(2).animate-slide-up-fade-in {
-          animation-delay: 0.4s;
-        }
-
-        /* 세 번째 박스: 0.6초 후 시작 */
-        .concern-card:nth-child(3).animate-slide-up-fade-in {
-          animation-delay: 0.6s;
-        }
-
-        /* 호버 효과 개선 */
-        .concern-card:hover {
-          transform: translateY(-8px) scale(1.02);
+        @media (prefers-reduced-motion: reduce) {
+          .review-device {
+            transition-duration: 0.01ms;
+          }
         }
       `}</style>
     </section>

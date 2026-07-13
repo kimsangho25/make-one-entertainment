@@ -31,6 +31,9 @@ export default function Header() {
           
           {/* Desktop Menu */}
           <nav className="hidden md:flex items-center space-x-8">
+            <Link to={createPageUrl("CompanyInfo")} className="text-gray-700 hover:text-gray-900 font-medium">
+              회사소개
+            </Link>
             <Link to={createPageUrl("Program")} className="text-gray-700 hover:text-gray-900 font-medium">
               프로그램
             </Link>
@@ -67,6 +70,9 @@ export default function Header() {
         {isMobileMenuOpen && (
           <div className="md:hidden">
             <nav className="flex flex-col space-y-2 px-6 py-6">
+              <Link to={createPageUrl("CompanyInfo")} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">
+                회사소개
+              </Link>
               <Link to={createPageUrl("Program")} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">
                 프로그램
               </Link>
