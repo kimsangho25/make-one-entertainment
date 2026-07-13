@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export default function Program() {
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
+
+  const getSlideImage = (program, slide) => slide.image || program.image;
 
   const programs = [
     {
@@ -12,9 +16,9 @@ export default function Program() {
       description: '요리 대결을 통한 창의력과 협업 능력 향상',
       image: '/images/programs/black-white-cook.jpeg',
       slides: [
-        { src: '/images/programs/bwcook-slide1.webp', caption: '01. 프로그램 소개 및 팀 구성' },
-        { src: '/images/programs/bwcook-slide2.webp', caption: '02. 팀 대항 요리 대결 진행' },
-        { src: '/images/programs/bwcook-slide3.webp', caption: '03. 심사 및 시상' },
+        { caption: '01. 프로그램 소개 및 팀 구성' },
+        { caption: '02. 팀 대항 요리 대결 진행' },
+        { caption: '03. 심사 및 시상' },
       ]
     },
     {
@@ -23,10 +27,10 @@ export default function Program() {
       description: '넷플릭스 드라마를 현실로! 팀워크와 전략이 필요한 몰입형 프로그램',
       image: '/images/programs/squid-game.jpeg',
       slides: [
-        { src: '/images/programs/squid-slide1.webp', caption: '01. 둥글게 둥글게 - 미션 숫자만큼 그룹을 만들고 지정된 장소로 이동' },
-        { src: '/images/programs/squid-slide2.webp', caption: '02. 무궁화 꽃이 피었습니다 ver 2 - 3라운드 업그레이드 버전' },
-        { src: '/images/programs/squid-slide3.webp', caption: '03. 개인전 5개의 존에서 자유 경쟁 - 딱지치기, 공기놀이, 비석치기, 팽이돌리기, 제기차기' },
-        { src: '/images/programs/squid-slide4.webp', caption: '04. 팀 대항 근대 5종 ver 2 - 5인 6각 근대 5종, 가장 빠르게 성공한 팀 승리 코인 증정' },
+        { caption: '01. 둥글게 둥글게 - 미션 숫자만큼 그룹을 만들고 지정된 장소로 이동' },
+        { caption: '02. 무궁화 꽃이 피었습니다 ver 2 - 3라운드 업그레이드 버전' },
+        { caption: '03. 개인전 5개의 존에서 자유 경쟁 - 딱지치기, 공기놀이, 비석치기, 팽이돌리기, 제기차기' },
+        { caption: '04. 팀 대항 근대 5종 ver 2 - 5인 6각 근대 5종, 가장 빠르게 성공한 팀 승리 코인 증정' },
       ]
     },
     {
@@ -35,9 +39,9 @@ export default function Program() {
       description: '경제 시뮬레이션 게임으로 의사결정 능력과 팀워크 강화',
       image: '/images/programs/money-game.jpeg',
       slides: [
-        { src: '/images/programs/money-slide1.webp', caption: '01. 게임 규칙 및 코인 시스템 안내' },
-        { src: '/images/programs/money-slide2.webp', caption: '02. 팀별 전략 수립 및 거래 진행' },
-        { src: '/images/programs/money-slide3.webp', caption: '03. 최종 결산 및 시상' },
+        { image: '/images/programs/money-slide1.png', caption: '01. 기본 규칙 및 카드 획득 방법' },
+        { image: '/images/programs/money-slide2.png', caption: '02. 게임 시나리오와 승리 조건' },
+        { image: '/images/programs/money-slide3.png', caption: '03. 미션 진행 및 수식로드 완성' },
       ]
     },
     {
@@ -46,9 +50,12 @@ export default function Program() {
       description: '팀 빌딩과 업무 효율성 향상을 위한 맞춤형 워크샵',
       image: '/images/programs/workshop.jpeg',
       slides: [
-        { src: '/images/programs/workshop-slide1.webp', caption: '01. 딱지치기 - 팀별 딱지 제작 후 대결' },
-        { src: '/images/programs/workshop-slide2.webp', caption: '02. 텔레파시 게임 - 팀원과 마음이 통하면 승리' },
-        { src: '/images/programs/workshop-slide3.webp', caption: '03. 미스터리 박스 챌린지 - 손감각으로 물건 맞추기' },
+        { image: '/images/programs/workshop-slide1.png', caption: '01. 딱지치기' },
+        { image: '/images/programs/workshop-slide2.png', caption: '02. 텔레파시' },
+        { image: '/images/programs/workshop-slide3.png', caption: '03. 신발양궁' },
+        { image: '/images/programs/workshop-slide4.png', caption: '04. 꼬깔꼬깔' },
+        { image: '/images/programs/workshop-slide5.png', caption: '05. 상자 속 물건 맞추기' },
+        { image: '/images/programs/workshop-slide6.png', caption: '06. 초성퀴즈' },
       ]
     },
     {
@@ -57,9 +64,11 @@ export default function Program() {
       description: '협력과 집중력이 필요한 대규모 도미노 프로젝트',
       image: '/images/programs/domino.jpeg',
       slides: [
-        { src: '/images/programs/domino-slide1.webp', caption: '01. 도미노 설치 방법 및 팀별 구역 배정' },
-        { src: '/images/programs/domino-slide2.webp', caption: '02. 안전 수칙 및 진행 규칙 안내' },
-        { src: '/images/programs/domino-slide3.webp', caption: '03. 완성 후 도미노 넘기기 & 액션 사진' },
+        { image: '/images/programs/domino-slide1.png', caption: '01. 도미노 프로그램 현장 소개' },
+        { image: '/images/programs/domino-slide2.png', caption: '02. 전체 진행 타임테이블' },
+        { image: '/images/programs/domino-slide3.png', caption: '03. 도미노 기본 설치 방법' },
+        { image: '/images/programs/domino-slide4.png', caption: '04. 도미노 진행 방법 및 안내' },
+        { image: '/images/programs/domino-slide5.png', caption: '05. 도미노 설치·진행 안전 규칙' },
       ]
     },
     {
@@ -68,9 +77,9 @@ export default function Program() {
       description: '전통과 현대가 어우러진 신나는 체육대회',
       image: '/images/programs/sports-day.jpeg',
       slides: [
-        { src: '/images/programs/sports-slide1.webp', caption: '01. 팀별 활동 종목 소개' },
-        { src: '/images/programs/sports-slide2.webp', caption: '02. 장비 및 세팅 제안' },
-        { src: '/images/programs/sports-slide3.webp', caption: '03. 시상 및 마무리' },
+        { caption: '01. 팀별 활동 종목 소개' },
+        { caption: '02. 장비 및 세팅 제안' },
+        { caption: '03. 시상 및 마무리' },
       ]
     },
     {
@@ -79,9 +88,9 @@ export default function Program() {
       description: '신입사원 환영 및 조직 적응을 위한 특별 프로그램',
       image: '/images/programs/new-employee.jpeg',
       slides: [
-        { src: '/images/programs/freshmen-slide1.webp', caption: '01. 아이스브레이킹 - 첫 만남을 자연스럽게' },
-        { src: '/images/programs/freshmen-slide2.webp', caption: '02. 단체 포즈 챌린지 - 팀별 창의적인 포즈 경쟁' },
-        { src: '/images/programs/freshmen-slide3.webp', caption: '03. 친구 만들기 클로징 - 새로운 인연을 맺는 마무리' },
+        { caption: '01. 아이스브레이킹 - 첫 만남을 자연스럽게' },
+        { caption: '02. 단체 포즈 챌린지 - 팀별 창의적인 포즈 경쟁' },
+        { caption: '03. 친구 만들기 클로징 - 새로운 인연을 맺는 마무리' },
       ]
     },
     {
@@ -90,9 +99,9 @@ export default function Program() {
       description: '세대를 아우르는 추억의 게임으로 하나 되는 시간',
       image: '/images/programs/retro-games.jpeg',
       slides: [
-        { src: '/images/programs/retro-slide1.webp', caption: '01. 달고나 만들기 & 전통 놀이 체험' },
-        { src: '/images/programs/retro-slide2.webp', caption: '02. 레트로 패션쇼 - 추억의 교복 & 복고 패션' },
-        { src: '/images/programs/retro-slide3.webp', caption: '03. 추억의 분식 가게 - 레트로 간식 즐기기' },
+        { caption: '01. 달고나 만들기 & 전통 놀이 체험' },
+        { caption: '02. 레트로 패션쇼 - 추억의 교복 & 복고 패션' },
+        { caption: '03. 추억의 분식 가게 - 레트로 간식 즐기기' },
       ]
     },
   ];
@@ -139,7 +148,9 @@ export default function Program() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <Header />
+      <main className="min-h-screen bg-gray-50">
       <section className="pt-24 md:pt-32 pb-12 md:pb-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4">프로그램</h1>
@@ -216,7 +227,7 @@ export default function Program() {
 
             <div className="relative bg-gray-100 flex items-center justify-center" style={{ minHeight: '400px' }}>
               <img
-                src={selectedProgram.slides[currentSlide].src}
+                src={getSlideImage(selectedProgram, selectedProgram.slides[currentSlide])}
                 alt={selectedProgram.slides[currentSlide].caption}
                 className="w-full object-contain"
                 style={{ maxHeight: '60vh' }}
@@ -258,6 +269,8 @@ export default function Program() {
           </div>
         </div>
       )}
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }
