@@ -10,6 +10,42 @@ import {
 
 const reviewCards = [
   {
+    id: 4,
+    image: "/images/reviews/review-04-event.jpg",
+    alt: "천안 행사 고객 리뷰",
+    background: "#f7f7f7",
+    width: 1080,
+    height: 1607,
+    fit: "height",
+  },
+  {
+    id: 3,
+    image: "/images/reviews/review-03.jpg",
+    alt: "63시티 한화 체육대회 고객 리뷰",
+    background: "#aec5d6",
+    width: 1080,
+    height: 1564,
+    fit: "width",
+  },
+  {
+    id: 7,
+    image: "/images/reviews/review-07.png",
+    alt: "김남주바이오 담당자 리뷰",
+    background: "#abc3d4",
+    width: 852,
+    height: 1846,
+    fit: "height",
+  },
+  {
+    id: 8,
+    image: "/images/reviews/review-08.png",
+    alt: "세무법인 행사 고객 리뷰",
+    background: "#f7f7f7",
+    width: 853,
+    height: 1844,
+    fit: "height",
+  },
+  {
     id: 1,
     image: "/images/reviews/review-01.png",
     alt: "기업 행사 고객 리뷰",
@@ -28,24 +64,6 @@ const reviewCards = [
     fit: "width",
   },
   {
-    id: 3,
-    image: "/images/reviews/review-03.jpg",
-    alt: "체육대회 고객 리뷰",
-    background: "#aec5d6",
-    width: 1080,
-    height: 1564,
-    fit: "width",
-  },
-  {
-    id: 4,
-    image: "/images/reviews/review-04.jpg",
-    alt: "돌잔치 행사 고객 리뷰",
-    background: "#f7f7f7",
-    width: 1080,
-    height: 2340,
-    fit: "height",
-  },
-  {
     id: 5,
     image: "/images/reviews/review-05.png",
     alt: "기업 행사 고객 리뷰",
@@ -56,29 +74,11 @@ const reviewCards = [
   },
   {
     id: 6,
-    image: "/images/reviews/review-06.png",
-    alt: "연말 행사 고객 리뷰",
+    image: "/images/reviews/review-08-bogwangsan.jpg",
+    alt: "보광산 업체 야유회 고객 리뷰",
     background: "#abc3d4",
-    width: 852,
-    height: 1846,
-    fit: "height",
-  },
-  {
-    id: 7,
-    image: "/images/reviews/review-07.png",
-    alt: "기업 행사 고객 리뷰",
-    background: "#abc3d4",
-    width: 852,
-    height: 1846,
-    fit: "height",
-  },
-  {
-    id: 8,
-    image: "/images/reviews/review-08.png",
-    alt: "세무법인 행사 고객 리뷰",
-    background: "#f7f7f7",
-    width: 853,
-    height: 1844,
+    width: 1080,
+    height: 1611,
     fit: "height",
   },
 ];
@@ -133,12 +133,12 @@ export default function AboutSection() {
           <BadgeCheck className="mx-auto mb-5 h-6 w-6 fill-blue-600 text-white lg:mx-0" aria-hidden="true" />
           <p className="text-sm font-bold tracking-[0.12em] text-blue-600">REAL CUSTOMER REVIEW</p>
           <h2 className="mt-4 text-3xl font-extrabold leading-[1.22] tracking-[-0.04em] text-slate-950 sm:text-4xl lg:text-[2.7rem] xl:text-5xl">
-            한 번 함께해보면,
-            <span className="mt-1 block text-blue-600">다음 행사도 메이크원입니다.</span>
+            한 번의 만족이,
+            <span className="mt-1 block text-blue-600">다음 행사의 선택이 됩니다.</span>
           </h2>
           <p className="mx-auto mt-6 max-w-md text-base leading-7 text-slate-600 lg:mx-0 lg:text-lg">
-            ‘한 번’은 우연일 수 있지만,<br className="hidden sm:block" />
-            ‘계속 함께하는’ 이유는 후기 속에 있습니다.
+            메이크원을 다시 찾는 이유는 고객의 후기<br />
+            속에 있습니다.
           </p>
 
           <div className="review-benefits mt-9 grid grid-cols-3 gap-3">
@@ -193,7 +193,7 @@ export default function AboutSection() {
                     <div className="flex h-12 shrink-0 items-center justify-between border-b border-slate-100 px-5 text-slate-700">
                       <span className="text-[11px] font-extrabold tracking-[0.18em] text-blue-600">MAKE ONE</span>
                       <span className="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold text-blue-700">
-                        REVIEW {String(review.id).padStart(2, "0")}
+                        REVIEW {String(index + 1).padStart(2, "0")}
                       </span>
                     </div>
 
@@ -222,6 +222,7 @@ export default function AboutSection() {
 
             <button
               type="button"
+              onPointerDown={(event) => event.stopPropagation()}
               onClick={() => goToReview(activeIndex - 1)}
               disabled={activeIndex === 0}
               className="absolute left-0 top-1/2 z-40 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-blue-100 bg-white text-slate-800 shadow-lg transition hover:text-blue-600 disabled:pointer-events-none disabled:opacity-25 sm:flex lg:left-2"
@@ -231,6 +232,7 @@ export default function AboutSection() {
             </button>
             <button
               type="button"
+              onPointerDown={(event) => event.stopPropagation()}
               onClick={() => goToReview(activeIndex + 1)}
               disabled={activeIndex === reviewCards.length - 1}
               className="absolute right-0 top-1/2 z-40 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-blue-100 bg-white text-slate-800 shadow-lg transition hover:text-blue-600 disabled:pointer-events-none disabled:opacity-25 sm:flex lg:right-2"
@@ -245,6 +247,7 @@ export default function AboutSection() {
               <button
                 key={review.id}
                 type="button"
+                onPointerDown={(event) => event.stopPropagation()}
                 onClick={() => goToReview(index)}
                 className={`h-2.5 rounded-full transition-all duration-300 ${
                   activeIndex === index ? "w-8 bg-blue-600" : "w-2.5 bg-blue-200 hover:bg-blue-300"

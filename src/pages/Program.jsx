@@ -167,14 +167,7 @@ export default function Program() {
     <>
       <Header />
       <main className="min-h-screen bg-gray-50">
-      <section className="pt-24 md:pt-32 pb-12 md:pb-16 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4">프로그램</h1>
-          <p className="text-base sm:text-lg md:text-xl text-blue-100">메이크원의 트렌디한 프로그램을 만나보세요</p>
-        </div>
-      </section>
-
-      <section className="py-12 md:py-20">
+      <section className="pt-28 pb-12 md:pt-36 md:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {programs.map((program) => (

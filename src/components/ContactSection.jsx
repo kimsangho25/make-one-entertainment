@@ -144,9 +144,9 @@ export default function ContactSection() {
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <Mail className="w-5 h-5 md:w-7 md:h-7 text-white" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-gray-400 text-sm md:text-xl">이메일</p>
-                    <a href="mailto:make1ent@nate.com" className="text-white font-medium hover:text-red-400 transition-colors text-base md:text-xl lg:text-2xl break-all">
+                    <a href="mailto:make1ent@nate.com" className="whitespace-nowrap text-white font-medium hover:text-red-400 transition-colors text-base sm:text-lg lg:text-base xl:text-lg 2xl:text-xl">
                       make1ent@nate.com
                     </a>
                   </div>
