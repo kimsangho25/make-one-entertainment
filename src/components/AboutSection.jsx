@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -95,7 +95,9 @@ export default function AboutSection() {
   const wheelLocked = useRef(false);
 
   const goToReview = useCallback((index) => {
-    setActiveIndex(Math.max(0, Math.min(reviewCards.length - 1, index)));
+    setActiveIndex(
+      ((index % reviewCards.length) + reviewCards.length) % reviewCards.length,
+    );
   }, []);
 
   const handlePointerDown = (event) => {
@@ -224,8 +226,7 @@ export default function AboutSection() {
               type="button"
               onPointerDown={(event) => event.stopPropagation()}
               onClick={() => goToReview(activeIndex - 1)}
-              disabled={activeIndex === 0}
-              className="absolute left-0 top-1/2 z-40 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-blue-100 bg-white text-slate-800 shadow-lg transition hover:text-blue-600 disabled:pointer-events-none disabled:opacity-25 sm:flex lg:left-2"
+              className="absolute left-1 top-1/2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-blue-100 bg-white/95 text-slate-800 shadow-lg backdrop-blur transition hover:-translate-y-[52%] hover:text-blue-600 sm:left-0 sm:h-12 sm:w-12 lg:left-2"
               aria-label="이전 리뷰"
             >
               <ArrowLeft className="h-5 w-5" aria-hidden="true" />
@@ -234,8 +235,7 @@ export default function AboutSection() {
               type="button"
               onPointerDown={(event) => event.stopPropagation()}
               onClick={() => goToReview(activeIndex + 1)}
-              disabled={activeIndex === reviewCards.length - 1}
-              className="absolute right-0 top-1/2 z-40 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-blue-100 bg-white text-slate-800 shadow-lg transition hover:text-blue-600 disabled:pointer-events-none disabled:opacity-25 sm:flex lg:right-2"
+              className="absolute right-1 top-1/2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-blue-100 bg-white/95 text-slate-800 shadow-lg backdrop-blur transition hover:-translate-y-[52%] hover:text-blue-600 sm:right-0 sm:h-12 sm:w-12 lg:right-2"
               aria-label="다음 리뷰"
             >
               <ArrowRight className="h-5 w-5" aria-hidden="true" />

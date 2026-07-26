@@ -1,0 +1,365 @@
+.company-page {
+  --company-blue: #2864ed;
+  --company-navy: #071226;
+  --company-ink: #0b1325;
+  --company-muted: #667085;
+  --company-line: #dfe5ef;
+  --company-paper: #f5f7fa;
+  color: var(--company-ink);
+  background: #fff;
+  overflow: hidden;
+}
+
+.company-page *,
+.company-page *::before,
+.company-page *::after { box-sizing: border-box; }
+
+/* Keep Korean phrases intact and let display text settle into balanced lines. */
+.company-page h1,
+.company-page h2,
+.company-page h3,
+.company-page blockquote,
+.company-page p,
+.company-page li,
+.company-page figcaption {
+  word-break: keep-all;
+}
+
+.company-page h1,
+.company-page h2,
+.company-page h3,
+.company-page blockquote,
+.company-philosophy__emphasis {
+  text-wrap: balance;
+}
+
+.company-rich-copy p,
+.company-philosophy__letter p {
+  text-wrap: pretty;
+}
+
+.company-page main { padding-top: 80px; }
+
+.company-shell {
+  width: min(1280px, calc(100% - 96px));
+  margin: 0 auto;
+}
+
+.company-kicker {
+  margin: 0 0 18px;
+  color: var(--company-blue);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: .22em;
+}
+
+.company-kicker--inverse { color: #8eb2ff; }
+
+.company-hero {
+  position: relative;
+  min-height: calc(100svh - 80px);
+  display: flex;
+  align-items: flex-end;
+  isolation: isolate;
+  background: var(--company-navy);
+}
+
+.company-hero__image,
+.company-hero__shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.company-hero__image { object-fit: cover; object-position: center 44%; z-index: -3; }
+
+.company-hero__shade {
+  z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(4, 12, 28, .96) 0%, rgba(4, 12, 28, .74) 44%, rgba(4, 12, 28, .2) 76%),
+    linear-gradient(0deg, rgba(4, 12, 28, .82) 0%, transparent 58%);
+}
+
+.company-hero__content { padding: 11vh 0 10vh; color: #fff; }
+
+.company-hero h1 {
+  max-width: 920px;
+  margin: 0;
+  font-size: clamp(58px, 7vw, 112px);
+  font-weight: 800;
+  line-height: .98;
+  letter-spacing: -.065em;
+}
+
+.company-hero__title-line {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.company-hero h1 > span:not(.company-hero__title-line) { color: #75a3ff; }
+
+.company-hero__lead {
+  max-width: 690px;
+  margin: 34px 0 38px;
+  color: rgba(255,255,255,.78);
+  font-size: clamp(18px, 1.5vw, 23px);
+  line-height: 1.75;
+  letter-spacing: -.025em;
+}
+
+.company-hero__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 22px;
+  border: 1px solid rgba(255,255,255,.42);
+  border-radius: 999px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 700;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.company-hero__link:hover { background: #fff; border-color: #fff; color: var(--company-ink); transform: translateY(-2px); }
+
+.company-hero__index {
+  position: absolute;
+  right: 28px;
+  bottom: 32px;
+  color: rgba(255,255,255,.48);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  writing-mode: vertical-rl;
+}
+
+.company-intro { padding: 150px 0 110px; background: #fff; scroll-margin-top: 80px; }
+
+.company-intro__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+  gap: 100px;
+  align-items: end;
+}
+
+.company-intro h2,
+.company-proof h2,
+.company-philosophy h2,
+.company-cta h2 {
+  margin: 0;
+  font-size: clamp(42px, 5vw, 76px);
+  line-height: 1.08;
+  letter-spacing: -.055em;
+}
+
+.company-intro__statement {
+  margin: 0 0 6px;
+  color: #667085;
+  font-size: 18px;
+  line-height: 1.85;
+  letter-spacing: -.025em;
+}
+
+.company-intro__statement strong { color: var(--company-ink); }
+
+.company-promise {
+  min-height: 860px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(450px, .92fr);
+}
+
+.company-promise:nth-of-type(even) { grid-template-columns: minmax(450px, .92fr) minmax(0, 1.08fr); }
+.company-promise:nth-of-type(even) .company-promise__visual { order: 2; }
+
+.company-promise__visual { position: relative; min-height: 760px; overflow: hidden; background: #dfe5ef; }
+.company-promise__visual::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,14,30,.28), transparent 45%); }
+.company-promise__visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.company-promise__number {
+  position: absolute;
+  left: 52px;
+  bottom: 30px;
+  z-index: 2;
+  color: rgba(255,255,255,.92);
+  font-size: clamp(80px, 9vw, 150px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.07em;
+}
+
+.company-promise__copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(70px, 8vw, 128px);
+  background: var(--company-paper);
+}
+
+.company-promise__copy h3 {
+  max-width: 660px;
+  margin: 0 0 44px;
+  font-size: clamp(36px, 3.7vw, 60px);
+  line-height: 1.13;
+  letter-spacing: -.055em;
+}
+
+.company-rich-copy { max-width: 660px; color: #525d70; font-size: 17px; line-height: 1.9; letter-spacing: -.02em; }
+.company-rich-copy p { margin: 0 0 22px; }
+.company-rich-copy__lead { color: var(--company-ink); font-size: 21px; font-weight: 700; }
+.company-rich-copy blockquote { margin: 38px 0 30px; padding: 24px 0 24px 26px; border-left: 3px solid var(--company-blue); color: var(--company-ink); font-size: clamp(21px, 2vw, 28px); font-weight: 750; line-height: 1.55; letter-spacing: -.035em; }
+
+.company-promise--dark .company-promise__copy { background: var(--company-navy); color: #fff; }
+.company-promise--dark .company-rich-copy { color: rgba(255,255,255,.68); }
+.company-promise--dark .company-rich-copy__lead,
+.company-promise--dark .company-rich-copy blockquote { color: #fff; }
+.company-promise--dark .company-kicker { color: #8eb2ff; }
+
+.company-proof { padding: 150px 0 170px; background: #050d1d; color: #fff; }
+.company-proof--gallery-only { padding-top: 0; }
+
+.company-proof__heading { display: grid; grid-template-columns: 1.1fr .6fr; gap: 90px; align-items: end; }
+.company-proof__heading > p { margin: 0 0 4px; color: rgba(255,255,255,.6); font-size: 17px; line-height: 1.8; }
+
+.company-proof__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin: 90px 0;
+  border-top: 1px solid rgba(255,255,255,.16);
+  border-bottom: 1px solid rgba(255,255,255,.16);
+}
+
+.company-proof__stats div { padding: 42px 30px; border-right: 1px solid rgba(255,255,255,.16); }
+.company-proof__stats div:last-child { border-right: 0; }
+.company-proof__stats strong { display: block; color: #78a5ff; font-size: clamp(40px, 5vw, 72px); line-height: 1; letter-spacing: -.05em; }
+.company-proof__stats span { display: block; margin-top: 14px; color: rgba(255,255,255,.52); font-size: 11px; font-weight: 700; letter-spacing: .16em; }
+
+.company-proof__gallery { display: grid; grid-template-columns: 1.25fr .75fr; grid-template-rows: repeat(2, 330px); gap: 20px; }
+.company-proof__item { position: relative; margin: 0; overflow: hidden; background: #121d31; }
+.company-proof__item--wide { grid-row: 1 / span 2; }
+.company-proof__item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s ease; }
+.company-proof__item:hover img { transform: scale(1.025); }
+.company-proof__item::after { content: ''; position: absolute; inset: 42% 0 0; background: linear-gradient(0deg, rgba(2,8,19,.9), transparent); }
+.company-proof__item figcaption { position: absolute; z-index: 2; left: 28px; right: 28px; bottom: 25px; display: flex; gap: 15px; align-items: baseline; font-size: 16px; font-weight: 700; }
+.company-proof__item figcaption span { color: #78a5ff; font-size: 12px; letter-spacing: .12em; }
+
+.company-philosophy { padding: 160px 0 0; background: #f3f5f8; scroll-margin-top: 80px; }
+.company-philosophy__header { padding-bottom: 90px; }
+.company-philosophy__header h2 { max-width: 900px; }
+
+.company-philosophy__portrait { position: relative; width: min(1480px, calc(100% - 48px)); height: clamp(480px, 62vw, 820px); margin: 0 auto; overflow: hidden; background: #cad0d8; }
+.company-philosophy__portrait::after { content: ''; position: absolute; inset: 50% 0 0; background: linear-gradient(0deg, rgba(5,13,29,.58), transparent); }
+.company-philosophy__portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; display: block; }
+.company-philosophy__portrait-caption { position: absolute; z-index: 2; left: 44px; bottom: 36px; display: flex; flex-direction: column; gap: 8px; color: #fff; }
+.company-philosophy__portrait-caption span { font-size: 11px; font-weight: 700; letter-spacing: .18em; opacity: .7; }
+.company-philosophy__portrait-caption strong { font-size: 23px; }
+
+.company-philosophy__body { display: grid; grid-template-columns: minmax(300px, .72fr) minmax(0, 1.28fr); gap: 120px; padding-top: 130px; padding-bottom: 170px; }
+.company-philosophy__quote { align-self: start; position: sticky; top: 130px; margin: 0; padding-top: 24px; border-top: 1px solid #b9c1ce; color: var(--company-blue); }
+.company-philosophy__quote p { margin: 28px 0 0; color: var(--company-ink); font-size: clamp(25px, 2.4vw, 36px); line-height: 1.5; letter-spacing: -.045em; }
+.company-philosophy__quote strong { color: var(--company-blue); }
+
+.company-philosophy__letter { max-width: 720px; color: #4f5b6c; font-size: 18px; line-height: 2.05; letter-spacing: -.025em; }
+.company-philosophy__letter p { margin: 0 0 28px; }
+.company-philosophy__greeting { color: var(--company-ink); font-size: 22px; font-weight: 750; }
+.company-philosophy__questions { margin: 34px 0 38px; padding: 28px 34px; border: 1px solid #d8dee8; background: #fff; list-style: none; color: var(--company-ink); font-size: 19px; font-weight: 650; line-height: 1.8; }
+.company-philosophy__questions li + li { margin-top: 8px; }
+.company-philosophy__emphasis { margin: 44px 0 !important; color: var(--company-ink); font-size: clamp(24px, 2.3vw, 34px); font-weight: 800; line-height: 1.55; letter-spacing: -.045em; }
+.company-philosophy__closing { margin: 50px 0; padding: 38px; background: var(--company-navy); color: rgba(255,255,255,.76); }
+.company-philosophy__closing p { margin: 0 0 8px; }
+.company-philosophy__closing p:nth-child(2),
+.company-philosophy__closing p:nth-child(4) { color: #fff; font-size: 22px; font-weight: 800; }
+.company-philosophy__signature { margin-top: 55px !important; color: var(--company-ink); text-align: right; }
+
+.company-cta { position: relative; min-height: 680px; display: flex; align-items: flex-end; isolation: isolate; color: #fff; background: var(--company-navy); }
+.company-cta > img,
+.company-cta__shade { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; }
+.company-cta > img { object-fit: cover; object-position: center 55%; }
+.company-cta__shade { z-index: -1; background: linear-gradient(90deg, rgba(4,12,28,.94), rgba(4,12,28,.35)), linear-gradient(0deg, rgba(4,12,28,.78), transparent 65%); }
+.company-cta__content { display: grid; grid-template-columns: 1.2fr .8fr; gap: 80px; align-items: end; padding: 100px 0; }
+.company-cta h2 { max-width: 760px; }
+.company-cta__action { padding-bottom: 7px; }
+.company-cta__action p { display: flex; gap: 10px; align-items: center; margin: 0 0 26px; color: rgba(255,255,255,.72); font-size: 16px; line-height: 1.6; }
+.company-cta__action a { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 58px; padding: 0 28px; border-radius: 999px; background: var(--company-blue); color: #fff; text-decoration: none; font-weight: 800; transition: background .2s ease, transform .2s ease; }
+.company-cta__action a:hover { background: #174dcc; transform: translateY(-2px); }
+
+@media (max-width: 1100px) {
+  .company-shell { width: min(980px, calc(100% - 56px)); }
+  .company-intro__grid,
+  .company-proof__heading,
+  .company-cta__content { grid-template-columns: 1fr; gap: 42px; }
+  .company-intro__statement { max-width: 680px; }
+  .company-promise,
+  .company-promise:nth-of-type(even) { min-height: 0; grid-template-columns: 1fr; }
+  .company-promise:nth-of-type(even) .company-promise__visual { order: 0; }
+  .company-promise__visual { min-height: 620px; }
+  .company-promise__copy { padding: 90px max(28px, 8vw) 110px; }
+  .company-promise__copy h3,
+  .company-rich-copy { max-width: 760px; }
+  .company-philosophy__body { gap: 70px; }
+  .company-cta__action { max-width: 600px; }
+}
+
+@media (max-width: 760px) {
+  .company-page main { padding-top: 64px; }
+  .company-shell { width: calc(100% - 40px); }
+  .company-hero { min-height: calc(100svh - 64px); }
+  .company-hero__image { object-position: 60% center; }
+  .company-hero__shade { background: linear-gradient(90deg, rgba(4,12,28,.95), rgba(4,12,28,.58)), linear-gradient(0deg, rgba(4,12,28,.85), transparent); }
+  .company-hero__content { padding: 90px 0 70px; }
+  .company-hero h1 {
+    font-size: clamp(36px, 12.2vw, 58px);
+    letter-spacing: -.06em;
+  }
+  .company-hero__lead br { display: none; }
+  .company-hero__index { display: none; }
+
+  .company-intro { padding: 100px 0 72px; scroll-margin-top: 64px; }
+  .company-intro__grid { grid-template-columns: 1fr; gap: 36px; }
+  .company-intro h2,
+  .company-proof h2,
+  .company-philosophy h2,
+  .company-cta h2 { font-size: clamp(38px, 11.5vw, 54px); }
+
+  .company-promise__visual { min-height: 420px; }
+  .company-promise__number { left: 20px; bottom: 18px; font-size: 76px; }
+  .company-promise__copy { padding: 70px 20px 86px; }
+  .company-promise__copy h3 { margin-bottom: 34px; font-size: 38px; }
+  .company-rich-copy { font-size: 16px; line-height: 1.82; }
+  .company-rich-copy p br { display: none; }
+  .company-rich-copy__lead { font-size: 19px; }
+  .company-rich-copy blockquote { margin: 32px 0 26px; padding-left: 19px; font-size: 21px; }
+
+  .company-proof { padding: 100px 0 110px; }
+  .company-proof__stats { grid-template-columns: 1fr; margin: 62px 0; }
+  .company-proof__stats div { padding: 30px 4px; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.16); }
+  .company-proof__stats div:last-child { border-bottom: 0; }
+  .company-proof__gallery { grid-template-columns: 1fr; grid-template-rows: repeat(3, 360px); }
+  .company-proof__item--wide { grid-row: auto; }
+  .company-proof__item figcaption { left: 20px; right: 20px; bottom: 20px; }
+
+  .company-philosophy { padding-top: 105px; scroll-margin-top: 64px; }
+  .company-philosophy__header { padding-bottom: 60px; }
+  .company-philosophy__portrait { width: 100%; height: 500px; }
+  .company-philosophy__portrait img { object-position: 61% center; }
+  .company-philosophy__portrait-caption { left: 20px; bottom: 22px; }
+  .company-philosophy__body { grid-template-columns: 1fr; gap: 70px; padding-top: 90px; padding-bottom: 110px; }
+  .company-philosophy__quote { position: static; }
+  .company-philosophy__letter { font-size: 16px; line-height: 1.9; }
+  .company-philosophy__questions { padding: 24px 20px; font-size: 17px; }
+  .company-philosophy__closing { margin-inline: -20px; padding: 32px 20px; }
+  .company-philosophy__signature { text-align: left; }
+
+  .company-cta { min-height: 720px; }
+  .company-cta > img { object-position: 62% center; }
+  .company-cta__shade { background: linear-gradient(90deg, rgba(4,12,28,.94), rgba(4,12,28,.5)), linear-gradient(0deg, rgba(4,12,28,.9), transparent); }
+  .company-cta__content { grid-template-columns: 1fr; gap: 45px; padding: 80px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .company-page * { scroll-behavior: auto !important; transition: none !important; }
+}

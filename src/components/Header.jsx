@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Menu, X, Phone } from "lucide-react";
@@ -30,12 +30,15 @@ export default function Header() {
           </Link>
           
           {/* Desktop Menu */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden xl:flex items-center gap-5 xl:gap-7">
             <Link to={createPageUrl("CompanyInfo")} className="text-gray-700 hover:text-gray-900 font-medium">
               회사소개
             </Link>
             <Link to={createPageUrl("Program")} className="text-gray-700 hover:text-gray-900 font-medium">
               프로그램
+            </Link>
+            <Link to={createPageUrl("CastingSystem")} className="text-gray-700 hover:text-gray-900 font-medium whitespace-nowrap">
+              섭외&amp;시스템
             </Link>
             <Link to={createPageUrl("Photos")} onClick={handlePortfolioClick} className="text-gray-700 hover:text-gray-900 font-medium">
               포트폴리오
@@ -59,8 +62,10 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="xl:hidden p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -68,13 +73,16 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden">
+          <div className="xl:hidden">
             <nav className="flex flex-col space-y-2 px-6 py-6">
               <Link to={createPageUrl("CompanyInfo")} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">
                 회사소개
               </Link>
               <Link to={createPageUrl("Program")} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">
                 프로그램
+              </Link>
+              <Link to={createPageUrl("CastingSystem")} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">
+                섭외&amp;시스템
               </Link>
               <Link to={createPageUrl("Photos")} onClick={handlePortfolioClick} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">
                 포트폴리오

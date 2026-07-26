@@ -22,6 +22,8 @@ import System from "./System";
 
 import Casting from "./Casting";
 
+import CastingSystem from "./CastingSystem";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -47,6 +49,8 @@ const PAGES = {
     System: System,
 
     Casting: Casting,
+
+    CastingSystem: CastingSystem,
     
 }
 
@@ -96,6 +100,8 @@ function PagesContent() {
                 <Route path="/System" element={<System />} />
 
                 <Route path="/Casting" element={<Casting />} />
+
+                <Route path="/CastingSystem" element={<CastingSystem />} />
                 
             </Routes>
         </Layout>
