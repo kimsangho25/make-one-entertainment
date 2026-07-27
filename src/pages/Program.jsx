@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -206,7 +206,7 @@ export default function Program() {
           <h3 className="text-xl sm:text-2xl font-bold mb-3 md:mb-4">프로그램에 대해 더 알고 싶으신가요?</h3>
           <p className="mb-6 md:mb-8 text-blue-100 text-sm sm:text-base">상세한 프로그램 소개와 견적을 문의해보세요</p>
           <a
-            href="/#contact"
+            href={`${import.meta.env.BASE_URL}#contact`}
             className="inline-block bg-white text-blue-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-gray-100 transition-all hover:scale-105 shadow-lg text-sm sm:text-base"
           >
             견적 문의하기
@@ -270,7 +270,7 @@ export default function Program() {
             <div className="px-5 py-4 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className="text-sm text-gray-500">더 자세한 내용이 궁금하신가요?</p>
               <a
-                href="/#contact"
+                href={`${import.meta.env.BASE_URL}#contact`}
                 onClick={closeSlideViewer}
                 className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition-colors"
               >견적 문의하기</a>

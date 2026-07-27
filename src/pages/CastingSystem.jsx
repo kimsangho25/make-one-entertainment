@@ -216,7 +216,7 @@ export default function CastingSystem() {
           </p>
           <div className="casting-system-cta__actions">
             <a href="tel:010-8771-8434">전화 상담 010-8771-8434</a>
-            <a href="/#contact">견적 문의하기</a>
+            <a href={`${import.meta.env.BASE_URL}#contact`}>견적 문의하기</a>
           </div>
         </section>
       </main>

@@ -6,6 +6,7 @@ yarn-error.log*
 
 # Production build
 dist/
+dist-preview/
 build/
 
 # 서버 파일 업로드 디렉토리

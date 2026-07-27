@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export default function Casting() {
@@ -135,7 +135,7 @@ export default function Casting() {
           <h3 className="text-2xl font-bold mb-4">캐스팅에 대해 더 알고 싶으신가요?</h3>
           <p className="mb-8 text-blue-100">아티스트 프로필과 견적을 문의해보세요</p>
           <a
-            href="/#contact"
+            href={`${import.meta.env.BASE_URL}#contact`}
             className="inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all hover:scale-105 shadow-lg"
           >
             견적 문의하기

@@ -255,7 +255,7 @@ const CompanyInfo = () => {
             </div>
             <div className="company-cta__action">
               <p><Check size={19} aria-hidden="true" /> 상담부터 종료 후 마지막 인사까지 함께합니다.</p>
-              <a href="/#contact">행사 문의하기 <ArrowUpRight size={20} aria-hidden="true" /></a>
+              <a href={`${import.meta.env.BASE_URL}#contact`}>행사 문의하기 <ArrowUpRight size={20} aria-hidden="true" /></a>
             </div>
           </div>
         </section>
