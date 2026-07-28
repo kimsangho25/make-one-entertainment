@@ -3,9 +3,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BadgeCheck,
-  CalendarCheck,
-  Handshake,
-  MessagesSquare,
 } from "lucide-react";
 
 const reviewCards = [
@@ -83,12 +80,6 @@ const reviewCards = [
   },
 ];
 
-const reviewBenefits = [
-  { icon: Handshake, label: "신뢰할 수 있는", value: "진짜 현장 후기" },
-  { icon: CalendarCheck, label: "행사가 끝난 뒤", value: "고객이 남긴 기록" },
-  { icon: MessagesSquare, label: "문장 하나까지", value: "솔직한 리뷰" },
-];
-
 export default function AboutSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const pointerStart = useRef(null);
@@ -136,24 +127,16 @@ export default function AboutSection() {
           <p className="text-sm font-bold tracking-[0.12em] text-blue-600">REAL CUSTOMER REVIEW</p>
           <h2 className="mt-4 text-3xl font-extrabold leading-[1.22] tracking-[-0.04em] text-slate-950 sm:text-4xl lg:text-[2.7rem] xl:text-5xl">
             한 번의 만족이,
-            <span className="mt-1 block text-blue-600">다음 행사의 선택이 됩니다.</span>
+            <span className="mt-1 block text-blue-600">
+              다음 행사의 선택이<br />
+              됩니다.
+            </span>
           </h2>
           <p className="mx-auto mt-6 max-w-md text-base leading-7 text-slate-600 lg:mx-0 lg:text-lg">
             메이크원을 다시 찾는 이유는 고객의 후기<br />
             속에 있습니다.
           </p>
 
-          <div className="review-benefits mt-9 grid grid-cols-3 gap-3">
-            {reviewBenefits.map((benefit) => (
-              <div key={benefit.value} className="text-center lg:text-left">
-                <div className="benefit-icon mx-auto mb-3 flex items-center justify-center rounded-full bg-white text-blue-600 shadow-[0_8px_24px_rgba(37,99,235,0.12)] ring-1 ring-blue-100">
-                  <benefit.icon className="h-5 w-5" aria-hidden="true" />
-                </div>
-                <p className="hidden text-[11px] leading-4 text-slate-500 sm:block">{benefit.label}</p>
-                <p className="mt-1 text-xs font-bold leading-5 text-slate-800 sm:text-sm">{benefit.value}</p>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div className="relative min-w-0">

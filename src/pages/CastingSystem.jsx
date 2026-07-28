@@ -33,7 +33,7 @@ const services = [
     label: "체육대회 장비",
     title: "에어바운스 · 기본 도구 · 에어아치",
     description: "안전하고 즐거운 체육대회를 위한 다양한 장비를 제공합니다.",
-    image: "/images/casting-system/04-sports-equipment.png",
+    image: "/images/casting-system/04-sports-equipment-wide.png",
   },
   {
     id: "event-supplies",
@@ -70,8 +70,8 @@ export default function CastingSystem() {
         });
       },
       {
-        threshold: 0.24,
-        rootMargin: "-18% 0px -42%",
+        threshold: 0.12,
+        rootMargin: "-12% 0px -12%",
       },
     );
 
@@ -175,6 +175,7 @@ export default function CastingSystem() {
             <article
               key={service.id}
               id={service.id}
+              data-service={service.id}
               className={`casting-section-card${index === 0 ? " is-visible" : ""}`}
               style={{ "--section-delay": `${index * 70}ms` }}
             >
@@ -203,22 +204,6 @@ export default function CastingSystem() {
           ))}
         </div>
 
-        <section className="casting-system-cta" aria-labelledby="casting-cta-title">
-          <p className="casting-system-cta__eyebrow">ONE BRIEFING, ONE TEAM</p>
-          <h2 id="casting-cta-title">
-            어떤 구성이 필요한지 몰라도
-            <br />
-            괜찮습니다.
-          </h2>
-          <p>
-            행사 목적과 규모를 알려주시면 필요한 인력과 시스템부터 먼저
-            정리해드립니다.
-          </p>
-          <div className="casting-system-cta__actions">
-            <a href="tel:010-8771-8434">전화 상담 010-8771-8434</a>
-            <a href={`${import.meta.env.BASE_URL}#contact`}>견적 문의하기</a>
-          </div>
-        </section>
       </main>
 
       {zoomedService && (

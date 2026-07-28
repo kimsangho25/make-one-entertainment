@@ -23,14 +23,14 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 transition-all duration-300 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 lg:px-5 xl:px-6">
         <div className="flex justify-between items-center h-16 md:h-20">
           <Link to={createPageUrl("Home")} className="flex items-center text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
             MAKE ONE
           </Link>
           
           {/* Desktop Menu */}
-          <nav className="hidden xl:flex items-center gap-5 xl:gap-7">
+          <nav className="hidden lg:flex items-center gap-2.5 text-[13px] xl:gap-7 xl:text-base">
             <Link to={createPageUrl("CompanyInfo")} className="text-gray-700 hover:text-gray-900 font-medium">
               회사소개
             </Link>
@@ -49,20 +49,20 @@ export default function Header() {
             
             <a 
               href="tel:010-8771-8434"
-              className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium"
+              className="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 font-medium whitespace-nowrap xl:gap-2"
             >
               <Phone className="w-4 h-4" />
               010-8771-8434
             </a>
             
-            <Link to="/#contact" className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition-all hover:scale-105 shadow-lg">
+            <Link to="/#contact" className="bg-blue-600 text-white px-3.5 py-2 rounded-full font-medium whitespace-nowrap hover:bg-blue-700 transition-all hover:scale-105 shadow-lg xl:px-6">
               견적 문의하기
             </Link>
           </nav>
 
           {/* Mobile Menu Button */}
           <button
-            className="xl:hidden p-2"
+            className="lg:hidden p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
             aria-expanded={isMobileMenuOpen}
@@ -73,7 +73,7 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="xl:hidden">
+          <div className="lg:hidden">
             <nav className="flex flex-col space-y-2 px-6 py-6">
               <Link to={createPageUrl("CompanyInfo")} className="text-gray-700 hover:text-gray-900 font-medium py-3 text-lg">
                 회사소개

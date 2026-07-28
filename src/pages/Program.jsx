@@ -201,19 +201,6 @@ export default function Program() {
         </div>
       </section>
 
-      <section className="py-12 md:py-16 bg-blue-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h3 className="text-xl sm:text-2xl font-bold mb-3 md:mb-4">프로그램에 대해 더 알고 싶으신가요?</h3>
-          <p className="mb-6 md:mb-8 text-blue-100 text-sm sm:text-base">상세한 프로그램 소개와 견적을 문의해보세요</p>
-          <a
-            href={`${import.meta.env.BASE_URL}#contact`}
-            className="inline-block bg-white text-blue-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-gray-100 transition-all hover:scale-105 shadow-lg text-sm sm:text-base"
-          >
-            견적 문의하기
-          </a>
-        </div>
-      </section>
-
       {selectedProgram && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"
