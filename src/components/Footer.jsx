@@ -36,6 +36,9 @@ export default function Footer() {
                 <MapPin className="w-5 h-5 text-blue-400" />
                 <span className="">서울 강서구 금낭화로 49-3 1층 상가</span>
               </div>
+              <p className="pl-8 text-sm text-gray-300 sm:text-base">
+                사업자 등록번호: 218-08-66900
+              </p>
             </div>
           </div>
 
