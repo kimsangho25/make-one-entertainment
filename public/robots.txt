@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /Admin
+Disallow: /Auth
 
 Sitemap: https://www.make1ent.co.kr/sitemap.xml
