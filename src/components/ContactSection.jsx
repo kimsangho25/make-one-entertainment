@@ -12,6 +12,7 @@ export default function ContactSection() {
     contactName: "",
     eventName: "",
     phone: "",
+    location: "",
     eventDate: "",
     expectedParticipants: "",
     budgetRange: "",
@@ -56,6 +57,7 @@ export default function ContactSection() {
           contactName: formData.contactName,
           eventName: formData.eventName,
           phone: formData.phone,
+          location: formData.location,
           eventDate: formData.eventDate,
           expectedParticipants: formData.expectedParticipants,
           budgetRange: formData.budgetRange,
@@ -183,8 +185,8 @@ export default function ContactSection() {
                     행사명 <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    value={formData.company}
-                    onChange={(e) => handleChange("company", e.target.value)}
+                    value={formData.eventName}
+                    onChange={(e) => handleChange("eventName", e.target.value)}
                     required
                     className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="행사명을 입력해주세요"
@@ -195,9 +197,12 @@ export default function ContactSection() {
                     연락처 <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    value={formData.contactName}
-                    onChange={(e) => handleChange("contactName", e.target.value)}
+                    value={formData.phone}
+                    onChange={(e) => handleChange("phone", e.target.value)}
                     required
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="연락처를 입력해주세요"
                   />
@@ -211,8 +216,8 @@ export default function ContactSection() {
                     위치 <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    value={formData.eventName}
-                    onChange={(e) => handleChange("eventName", e.target.value)}
+                    value={formData.location}
+                    onChange={(e) => handleChange("location", e.target.value)}
                     required
                     className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="위치를 입력해주세요"
@@ -223,8 +228,8 @@ export default function ContactSection() {
                     예산 <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    value={formData.phone}
-                    onChange={(e) => handleChange("phone", e.target.value)}
+                    value={formData.budgetRange}
+                    onChange={(e) => handleChange("budgetRange", e.target.value)}
                     required
                     className="w-full px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm md:text-base lg:text-xl"
                     placeholder="예산을 입력해주세요"

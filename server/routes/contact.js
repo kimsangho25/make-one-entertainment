@@ -38,6 +38,7 @@ router.post('/', async (req, res) => {
           contactName,
           eventName,
           phone,
+          location,
           eventDate,
           expectedParticipants,
           budgetRange,
@@ -45,7 +46,7 @@ router.post('/', async (req, res) => {
         } = req.body || {};
 
         // 필수값 검증
-        if (!required(company) || !required(contactName) || !required(eventName) || !required(phone)) {
+        if (!required(eventName) || !required(phone) || !required(location) || !required(budgetRange)) {
         return res.status(400).json({ ok: false, error: 'missing_required_fields' });
         }
 
@@ -56,10 +57,11 @@ router.post('/', async (req, res) => {
 
         const summary =
           `[문의]
-          단체명: ${company}
-          담당자명: ${contactName}
+          단체명: ${company || '-'}
+          담당자명: ${contactName || '-'}
           행사명: ${eventName}
           연락처: ${phone}
+          위치: ${location}
           행사날짜: ${eventDate || '-'}
           예상인원: ${expectedParticipants || '-'}
           예산범위: ${budgetRange || '-'}
@@ -76,7 +78,8 @@ router.post('/', async (req, res) => {
           appendCsv({
             ts: new Date().toISOString(),
             ip: req.ip,
-            company, contactName, eventName, phone, eventDate, expectedParticipants, budgetRange, requirements,
+            company, contactName, eventName, phone, eventDate, expectedParticipants, budgetRange,
+            requirements: `위치: ${location} | 요청사항: ${requirements || '-'}`,
             smsRequestId: '',
             smsStatusCode: `ERR:${e.message}`,
             smsStatusName: (e.data && JSON.stringify(e.data)) || '',
@@ -88,7 +91,8 @@ router.post('/', async (req, res) => {
         appendCsv({
           ts: new Date().toISOString(),
           ip: req.ip,
-          company, contactName, eventName, phone, eventDate, expectedParticipants, budgetRange, requirements,
+          company, contactName, eventName, phone, eventDate, expectedParticipants, budgetRange,
+          requirements: `위치: ${location} | 요청사항: ${requirements || '-'}`,
           smsRequestId: smsReqId,
           smsStatusCode: smsStatusCode,
           smsStatusName: smsStatusName,
@@ -102,4 +106,3 @@ router.post('/', async (req, res) => {
 });
 
 export default router;
-
