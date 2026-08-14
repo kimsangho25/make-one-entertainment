@@ -38,6 +38,8 @@ export default function ContactSection() {
     }
     
     setIsSubmitting(true);
+
+    const campaignParams = new URLSearchParams(window.location.search);
     
     try {
       // await Contact.create({
@@ -61,7 +63,10 @@ export default function ContactSection() {
           eventDate: formData.eventDate,
           expectedParticipants: formData.expectedParticipants,
           budgetRange: formData.budgetRange,
-          requirements: formData.requirements
+          requirements: formData.requirements,
+          marketingSource: campaignParams.get("utm_source") || "direct",
+          marketingMedium: campaignParams.get("utm_medium") || "none",
+          marketingCampaign: campaignParams.get("utm_campaign") || "none"
         })
       });
       if(!res.ok){

@@ -42,7 +42,10 @@ router.post('/', async (req, res) => {
           eventDate,
           expectedParticipants,
           budgetRange,
-          requirements
+          requirements,
+          marketingSource,
+          marketingMedium,
+          marketingCampaign
         } = req.body || {};
 
         // 필수값 검증
@@ -65,6 +68,7 @@ router.post('/', async (req, res) => {
           행사날짜: ${eventDate || '-'}
           예상인원: ${expectedParticipants || '-'}
           예산범위: ${budgetRange || '-'}
+          유입경로: ${marketingSource || 'direct'} / ${marketingMedium || 'none'} / ${marketingCampaign || 'none'}
           요청사항: ${requirements || '-'}`;
 
         let sms = null, smsReqId = '', smsStatusCode = '', smsStatusName = '';
@@ -79,7 +83,7 @@ router.post('/', async (req, res) => {
             ts: new Date().toISOString(),
             ip: req.ip,
             company, contactName, eventName, phone, eventDate, expectedParticipants, budgetRange,
-            requirements: `위치: ${location} | 요청사항: ${requirements || '-'}`,
+            requirements: `위치: ${location} | 유입경로: ${marketingSource || 'direct'}/${marketingMedium || 'none'}/${marketingCampaign || 'none'} | 요청사항: ${requirements || '-'}`,
             smsRequestId: '',
             smsStatusCode: `ERR:${e.message}`,
             smsStatusName: (e.data && JSON.stringify(e.data)) || '',
@@ -92,7 +96,7 @@ router.post('/', async (req, res) => {
           ts: new Date().toISOString(),
           ip: req.ip,
           company, contactName, eventName, phone, eventDate, expectedParticipants, budgetRange,
-          requirements: `위치: ${location} | 요청사항: ${requirements || '-'}`,
+          requirements: `위치: ${location} | 유입경로: ${marketingSource || 'direct'}/${marketingMedium || 'none'}/${marketingCampaign || 'none'} | 요청사항: ${requirements || '-'}`,
           smsRequestId: smsReqId,
           smsStatusCode: smsStatusCode,
           smsStatusName: smsStatusName,
